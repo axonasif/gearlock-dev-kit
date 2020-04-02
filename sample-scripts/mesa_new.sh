@@ -14,34 +14,36 @@ rm -r /system/lib/libdrm.so \
 /system/lib/libdrm_intel.so \
 /system/lib/libdrm_radeon.so \
 /system/lib/libgralloc_drm.so \
-/system/lib/egl/libGLES_mesa.so \
-/system/lib/libhardware* \
-/system/lib/libLLVM80.so \
-/system/lib/libglapi.so \
-/system/lib/libgbm.so \
 /system/lib64/libdrm.so \
 /system/lib64/libdrm_amdgpu.so \
 /system/lib64/libdrm_nouveau.so \
 /system/lib64/libdrm_intel.so \
 /system/lib64/libdrm_radeon.so \
-/system/lib64/libhardware* \
-/system/lib64/libLLVM80.so \
-/system/lib64/libGLES_mesa.so \
-/system/lib64/libglapi.so \
 /system/lib64/libgralloc_drm.so \
-/system/vendor/lib/libglapi.so \
-/system/vendor/lib/hw/vulkan* \
-/system/vendor/lib/egl/libGLES_mesa.so \
-/system/vendor/lib64/libglapi.so \
-/system/vendor/lib64/hw/vulkan* \
-/system/vendor/lib64/egl/libGLES_mesa.so \
+/system/lib/libhardware* \
+/system/lib64/libhardware* \
+/system/lib/libLLVM80.so \
+/system/lib64/libLLVM80.so \
+/system/lib/libglapi.so \
+/system/lib/libgbm.so \
+/system/lib64/libglapi.so \
 /system/lib64/libgbm.so \
+/system/vendor/lib/libglapi.so \
+/system/vendor/lib/libgbm.so \
+/system/vendor/lib64/libglapi.so \
+/system/vendor/lib64/libgbm.so \
+/system/lib/egl/libGLES_mesa.so \
+/system/lib64/libGLES_mesa.so \
+/system/vendor/lib/egl/libGLES_mesa.so \
+/system/vendor/lib64/egl/libGLES_mesa.so \
+/system/vendor/lib/hw/vulkan* \
+/system/vendor/lib64/hw/vulkan* \
 /system/ghome/status/mesav > /dev/null 2>&1
 
 rm -rf /system/lib/dri \
 /system/lib64/dri \
 /system/vendor/lib/dri \
-system/vendor/lib64/dri /dev/null 2>&1
+/system/vendor/lib64/dri /dev/null 2>&1
 }
 
 
