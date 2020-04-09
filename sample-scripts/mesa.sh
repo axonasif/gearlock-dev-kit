@@ -107,14 +107,14 @@ rm \
 
 # Backup mesa
 if [ ! -f $DEPDIR/mesa.bak ]; then 
-geco "\n+ Backing up current mesa dependencies ..."
+geco "\n+ Backing up stock mesa dri & dependencies ..."
 cd /system; garca a -m0=lzma2 -mx=3 '-xr!*arm*' '-xr!*firmware*' '-xr!*modules*' $DEPDIR/mesa.bak lib* vendor/lib*; fi
 
 # Cleanup mesa
-geco "\n${GREEN}Cleaning up existing mesa deps and dri${RC} ..."; nout clean_job
+geco "\n${GREEN}Cleaning up existing mesa dri & dependencies${RC} ..."; nout clean_job
 
 # Merge mesa
-geco "\n+ Merging mesa dri & dependencie files in your operating-system"
+geco "\n+ Merging new mesa dri & dependencie files in your operating-system"
 gclone "$BD/system" / # You must use quotes " " if any of your file-name contains *spaces or special characters
 
 
