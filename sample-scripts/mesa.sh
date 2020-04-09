@@ -1,8 +1,6 @@
 #+++++++++ This sample script is not ready yet. Need to refine it a bit more
 
 
-
-
 ## If you're thinking of using this then you should probably know what you're upto.
 ## It is necessary to clean up all the existing mesa deps before installing a new one to avoid conflicts.
 ## Make sure to include all the mesa deps that you find to be cleaned up in `clean_job` function.
@@ -17,8 +15,6 @@ get_base_dir # Returns the directory path in $BD variable from where this *insta
 
 
 # Define functions
-backup_mesa(){ [ -f $DEPDIR/mesa.bak ] && rm $DEPDIR/mesa.bak; cd /system; garca a -m0=lzma2 -mx=3 '-xr!*arm*' '-xr!*firmware*' '-xr!*modules*' $DEPDIR/mesa.bak lib* vendor/lib*; }
-
 clean_job(){
 #llvm
 rm \
@@ -102,16 +98,22 @@ rm \
 
 # # if [ ! $ANDROID_VER = 7 ] || [ ! $ANDROID_VER = 7.1 ]; then
 # #
-# # geco "\n+ You can not install this mesa build in android-X"
+# # geco "\n+ You can not install this mesa build in android-${ANDROID_VER}"
 # #
 # # exit 101 #(return-code ref: https://supreme-gamers.com/gearlock/#install-sh-return-codes)
 # #
 # # fi
 
 
-geco "\n+ Backing up current mesa dependencies ..."; nout backup_mesa
-geco "\n${GREEN}Cleaning up existing mesa deps and dri${RC}"; nout clean_job
+# Backup mesa
+if [ ! -f $DEPDIR/mesa.bak ]; then 
+geco "\n+ Backing up current mesa dependencies ..."
+cd /system; garca a -m0=lzma2 -mx=3 '-xr!*arm*' '-xr!*firmware*' '-xr!*modules*' $DEPDIR/mesa.bak lib* vendor/lib*; fi
 
+# Cleanup mesa
+geco "\n${GREEN}Cleaning up existing mesa deps and dri${RC} ..."; nout clean_job
+
+# Merge mesa
 geco "\n+ Merging mesa dri & dependencie files in your operating-system"
 gclone "$BD/system" / # You must use quotes " " if any of your file-name contains *spaces or special characters
 
@@ -130,9 +132,9 @@ gclone "$BD/system" / # You must use quotes " " if any of your file-name contain
 geco "\n+ Cleaning up current mesa deps ..."; sleep 0.5
 cd /system; rm -r lib*/hw lib*/egl lib*/dri; rm -r vendor/lib*; nout rm lib*/*
 
-
 # Extract mesa backup
 geco "\n+ Restoring old mesa : \c"
+[ ! -f $DEPDIR/mesa.bak ] && geco "\n- Mesa backup archive not found !" && return 1
 nout garca x -aoa -o/system $DEPDIR/mesa.bak && rm $DEPDIR/mesa.bak
 geco "Done !"; sleep 1.5
 
