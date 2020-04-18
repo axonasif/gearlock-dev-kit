@@ -134,7 +134,7 @@ cd /system; rm -r lib*/hw lib*/egl lib*/dri; rm -r vendor/lib*; nout rm lib*/*
 
 # Extract mesa backup
 geco "\n+ Restoring old mesa : \c"
-[ ! -f $DEPDIR/mesa.bak ] && geco "\n- Mesa backup archive not found !" && return 1
+[ ! -f $DEPDIR/mesa.bak ] && geco "\n- Mesa backup archive not found !" && return 101
 nout garca x -aoa -o/system $DEPDIR/mesa.bak && rm $DEPDIR/mesa.bak
 geco "Done !"; sleep 1.5
 
