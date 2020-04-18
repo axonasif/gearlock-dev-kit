@@ -138,7 +138,7 @@ geco "\n+ Restoring old mesa : \c"
 nout garca x -aoa -o/system $DEPDIR/mesa.bak && rm $DEPDIR/mesa.bak
 geco "Done !"; sleep 1.5
 
-
+# GEN_UNINS should be set to `no` for mesa packages.
 ## Cut this part into your `uninstall.sh`
 ##### uninstall.sh code ####
 
