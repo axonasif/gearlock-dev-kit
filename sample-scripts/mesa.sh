@@ -123,7 +123,7 @@ gclone "$BD/system" / # You must use quotes " " if any of your file-name contain
 
 ##### uninstall.sh code ####
 ## Cut this part into your `uninstall.sh`
-
+# GEN_UNINS should be set to `no` for mesa packages.
 
 # Check if the user is trying to uninstall from gearlock-app
 [ ! -z "$(ps | grep $GAPPID)" ] && geco "\n+ You must run ${YELLOW}gearlock${RC} from terminal (tty) to uninstall mesa !\n+ Press ${BRED}Alt + F1${RC}, then type ${YELLOW}gearlock${RC} and press enter." && sleep 10 && gkillapp $GAPPID && chvt 1
