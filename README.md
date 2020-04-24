@@ -1,5 +1,5 @@
-To get started, execute ./configure.sh
+To get started, execute ./configure
 
-To build your package/extension, execute ./build.sh
+To build your package/extension, execute ./build
 
 For proper documentation visit https://supreme-gamers.com/gearlock
