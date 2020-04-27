@@ -117,7 +117,9 @@ geco "\n${GREEN}Cleaning up existing mesa dri & dependencies${RC} ..."; nout cle
 geco "\n+ Merging new mesa dri & dependencie files in your operating-system"
 gclone "$BD/system" / # You must use quotes " " if any of your file-name contains *spaces or special characters
 
-
+# Clear dalvik-cache
+geco "\n+ Clearing dalvik-cache ..."
+[ -d "/data/dalvik-cache" ] && rm -rf /data/dalvik-cache/*
 
 
 
@@ -137,6 +139,10 @@ geco "\n+ Restoring old mesa : \c"
 [ ! -f $DEPDIR/mesa.bak ] && geco "\n- Mesa backup archive not found !" && return 101
 nout garca x -aoa -o/system $DEPDIR/mesa.bak && rm $DEPDIR/mesa.bak
 geco "Done !"; sleep 1.5
+
+# Clear dalvik-cache
+geco "\n+ Clearing dalvik-cache ..."
+[ -d "/data/dalvik-cache" ] && rm -rf /data/dalvik-cache/*
 
 # GEN_UNINS should be set to `no` for mesa packages.
 ## Cut this part into your `uninstall.sh`
