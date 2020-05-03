@@ -16,80 +16,80 @@ get_base_dir # Returns the directory path in $BD variable from where this *insta
 
 # Define functions
 clean_job(){
-#llvm
-rm \
-/system/lib/libLLVM* \
-/system/lib64/libLLVM* \
-/system/lib/vendor/libLLVM* \
-/system/lib64/vendor/libLLVM* \
-#dri
-rm -r \
-/system/lib/dri \
-/system/lib64/dri \
-/system/vendor/lib/dri \
-/system/vendor/lib64/dri \
-/system/phoenixos_darkmatter/dri \
-/system/phoenixos_darkmatter64/dri \
-#hw
-rm \
-/system/lib/hw/* \
-/system/lib64/hw/* \
-/system/vendor/lib/hw/* \
-/system/vendor/lib64/hw/* \
-# vulkan
-rm \
-/system/lib/*vulkan* \
-/system/lib64/*vulkan* \
-/system/lib/hw/*vulkan* \
-/system/lib64/hw/*vulkan* \
-/system/vendor/lib/*vulkan* \
-/system/vendor/lib64/*vulkan* \
-/system/vendor/lib/hw/*vulkan* \
-/system/vendor/lib64/hw/*vulkan*
-#drm
-rm \
-/system/lib/libdrm_* \
-/system/lib/libdrm.so \
-/system/lib64/libdrm_* \
-/system/lib64/libdrm.so \
-/system/vendor/lib/libdrm_* \
-/system/vendor/lib/libdrm.so \
-/system/vendor/lib64/libdrm_* \
-/system/vendor/lib64/libdrm.so
-#gralloc_drm
-rm \
-/system/lib/libgralloc_drm.so \
-/system/lib64/libgralloc_drm.so \
-/system/vendor/lib/libgralloc_drm.so \
-/system/vendor/lib64/libgralloc_drm.so
-#gbm
-rm \
-/system/lib/libgbm.so \
-/system/lib64/libgbm.so \
-/system/vendor/lib/libgbm.so \
-/system/vendor/lib64/libgbm.so 
-#glapi
-rm \
-/system/lib/libglapi.so \
-/system/lib64/libglapi.so \
-/system/vendor/lib/libglapi.so \
-/system/vendor/lib64/libglapi.so
-#libGLESmesa
-rm \
-/system/lib/egl/libGLES_mesa.so \
-/system/lib64/egl/libGLES_mesa.so \
-/system/vendor/lib/egl/libGLES_mesa.so \
-/system/vendor/lib64/egl/libGLES_mesa.so
-#GLES-CM_EGL-orig
-rm \
-/system/lib/libEGL_orig.so \
-/system/lib/libGLESv1_CM_orig.so \
-/system/lib/libGLESv2_orig.so \
-/system/lib/libGLESv3_orig.so \
-/system/lib64/libEGL_orig.so \
-/system/lib64/libGLESv1_CM_orig.so \
-/system/lib64/libGLESv2_orig.so \
-/system/lib64/libGLESv3_orig.so
+	#llvm
+	rm \
+		/system/lib/libLLVM* \
+		/system/lib64/libLLVM* \
+		/system/lib/vendor/libLLVM* \
+		/system/lib64/vendor/libLLVM* \
+		#dri
+	rm -r \
+		/system/lib/dri \
+		/system/lib64/dri \
+		/system/vendor/lib/dri \
+		/system/vendor/lib64/dri \
+		/system/phoenixos_darkmatter/dri \
+		/system/phoenixos_darkmatter64/dri \
+		#hw
+	rm \
+		/system/lib/hw/* \
+		/system/lib64/hw/* \
+		/system/vendor/lib/hw/* \
+		/system/vendor/lib64/hw/* \
+		# vulkan
+	rm \
+		/system/lib/*vulkan* \
+		/system/lib64/*vulkan* \
+		/system/lib/hw/*vulkan* \
+		/system/lib64/hw/*vulkan* \
+		/system/vendor/lib/*vulkan* \
+		/system/vendor/lib64/*vulkan* \
+		/system/vendor/lib/hw/*vulkan* \
+		/system/vendor/lib64/hw/*vulkan*
+	#drm
+	rm \
+		/system/lib/libdrm_* \
+		/system/lib/libdrm.so \
+		/system/lib64/libdrm_* \
+		/system/lib64/libdrm.so \
+		/system/vendor/lib/libdrm_* \
+		/system/vendor/lib/libdrm.so \
+		/system/vendor/lib64/libdrm_* \
+		/system/vendor/lib64/libdrm.so
+	#gralloc_drm
+	rm \
+		/system/lib/libgralloc_drm.so \
+		/system/lib64/libgralloc_drm.so \
+		/system/vendor/lib/libgralloc_drm.so \
+		/system/vendor/lib64/libgralloc_drm.so
+	#gbm
+	rm \
+		/system/lib/libgbm.so \
+		/system/lib64/libgbm.so \
+		/system/vendor/lib/libgbm.so \
+		/system/vendor/lib64/libgbm.so
+	#glapi
+	rm \
+		/system/lib/libglapi.so \
+		/system/lib64/libglapi.so \
+		/system/vendor/lib/libglapi.so \
+		/system/vendor/lib64/libglapi.so
+	#libGLESmesa
+	rm \
+		/system/lib/egl/libGLES_mesa.so \
+		/system/lib64/egl/libGLES_mesa.so \
+		/system/vendor/lib/egl/libGLES_mesa.so \
+		/system/vendor/lib64/egl/libGLES_mesa.so
+	#GLES-CM_EGL-orig
+	rm \
+		/system/lib/libEGL_orig.so \
+		/system/lib/libGLESv1_CM_orig.so \
+		/system/lib/libGLESv2_orig.so \
+		/system/lib/libGLESv3_orig.so \
+		/system/lib64/libEGL_orig.so \
+		/system/lib64/libGLESv1_CM_orig.so \
+		/system/lib64/libGLESv2_orig.so \
+		/system/lib64/libGLESv3_orig.so
 }
 
 
@@ -106,9 +106,10 @@ rm \
 
 
 # Backup mesa
-if [ ! -f $DEPDIR/mesa.bak ]; then 
-geco "\n+ Backing up stock mesa dri & dependencies ..."
-cd /system; garca a -m0=lzma2 -mx=3 '-xr!*arm*' '-xr!*firmware*' '-xr!*modules*' "$DEPDIR"/mesa.bak lib* vendor/lib*; fi
+if [ ! -f $DEPDIR/mesa.bak ]; then
+	geco "\n+ Backing up stock mesa dri & dependencies ..."
+	cd /system; garca a -m0=lzma2 -mx=3 '-xr!*arm*' '-xr!*firmware*' '-xr!*modules*' "$DEPDIR"/mesa.bak lib* vendor/lib*
+fi
 
 # Cleanup mesa
 geco "\n${GREEN}Cleaning up existing mesa dri & dependencies${RC} ..."
@@ -120,13 +121,27 @@ gclone "$BD/system" / # You must use quotes " " if any of your file-name contain
 
 # Symlink dri
 for libX in lib lib64; do
-[ -e /system/$libX/dri ] && [ ! -e /system/vendor/$libX/dri ] && ln -sr /system/$libX/dri /system/vendor/$libX/dri
-[ -e /system/vendor/$libX/dri ] && [ ! -e /system/$libX/dri ] && ln -sr /system/vendor/$libX/dri /system/$libX/dri
+	[ -e /system/$libX/dri ] && [ ! -e /system/vendor/$libX/dri ] && ln -sr /system/$libX/dri /system/vendor/$libX/dri
+	[ -e /system/vendor/$libX/dri ] && [ ! -e /system/$libX/dri ] && ln -sr /system/vendor/$libX/dri /system/$libX/dri
 done
 
 # Clear dalvik-cache
 geco "\n+ Clearing dalvik-cache ..."
 [ -d "/data/dalvik-cache" ] && rm -rf /data/dalvik-cache/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
