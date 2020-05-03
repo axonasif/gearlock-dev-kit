@@ -108,14 +108,21 @@ rm \
 # Backup mesa
 if [ ! -f $DEPDIR/mesa.bak ]; then 
 geco "\n+ Backing up stock mesa dri & dependencies ..."
-cd /system; garca a -m0=lzma2 -mx=3 '-xr!*arm*' '-xr!*firmware*' '-xr!*modules*' $DEPDIR/mesa.bak lib* vendor/lib*; fi
+cd /system; garca a -m0=lzma2 -mx=3 '-xr!*arm*' '-xr!*firmware*' '-xr!*modules*' "$DEPDIR"/mesa.bak lib* vendor/lib*; fi
 
 # Cleanup mesa
-geco "\n${GREEN}Cleaning up existing mesa dri & dependencies${RC} ..."; nout clean_job
+geco "\n${GREEN}Cleaning up existing mesa dri & dependencies${RC} ..."
+nout clean_job; [ "$?" != "0" ] && geco "\n+ Something went wrong, the installation can not continue ..." && return 101
 
 # Merge mesa
 geco "\n+ Merging new mesa dri & dependencie files in your operating-system"
 gclone "$BD/system" / # You must use quotes " " if any of your file-name contains *spaces or special characters
+
+# Symlink dri
+for libX in lib lib64; do
+[ -e /system/$libX/dri ] && [ ! -e /system/vendor/$libX/dri ] && ln -sr /system/$libX/dri /system/vendor/$libX/dri
+[ -e /system/vendor/$libX/dri ] && [ ! -e /system/$libX/dri ] && ln -sr /system/vendor/$libX/dri /system/$libX/dri
+done
 
 # Clear dalvik-cache
 geco "\n+ Clearing dalvik-cache ..."
