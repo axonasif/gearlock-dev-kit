@@ -22,7 +22,7 @@ clean_job(){
 		/system/lib64/libLLVM* \
 		/system/lib/vendor/libLLVM* \
 		/system/lib64/vendor/libLLVM* \
-		#dri
+    #dri
 	rm -r \
 		/system/lib/dri \
 		/system/lib64/dri \
@@ -30,13 +30,13 @@ clean_job(){
 		/system/vendor/lib64/dri \
 		/system/phoenixos_darkmatter/dri \
 		/system/phoenixos_darkmatter64/dri \
-		#hw
+    #hw
 	rm \
 		/system/lib/hw/* \
 		/system/lib64/hw/* \
 		/system/vendor/lib/hw/* \
 		/system/vendor/lib64/hw/* \
-		# vulkan
+    # vulkan
 	rm \
 		/system/lib/*vulkan* \
 		/system/lib64/*vulkan* \
@@ -46,7 +46,7 @@ clean_job(){
 		/system/vendor/lib64/*vulkan* \
 		/system/vendor/lib/hw/*vulkan* \
 		/system/vendor/lib64/hw/*vulkan*
-	#drm
+    #drm
 	rm \
 		/system/lib/libdrm_* \
 		/system/lib/libdrm.so \
@@ -56,31 +56,31 @@ clean_job(){
 		/system/vendor/lib/libdrm.so \
 		/system/vendor/lib64/libdrm_* \
 		/system/vendor/lib64/libdrm.so
-	#gralloc_drm
+    #gralloc_drm
 	rm \
 		/system/lib/libgralloc_drm.so \
 		/system/lib64/libgralloc_drm.so \
 		/system/vendor/lib/libgralloc_drm.so \
 		/system/vendor/lib64/libgralloc_drm.so
-	#gbm
+    #gbm
 	rm \
 		/system/lib/libgbm.so \
 		/system/lib64/libgbm.so \
 		/system/vendor/lib/libgbm.so \
 		/system/vendor/lib64/libgbm.so
-	#glapi
+    #glapi
 	rm \
 		/system/lib/libglapi.so \
 		/system/lib64/libglapi.so \
 		/system/vendor/lib/libglapi.so \
 		/system/vendor/lib64/libglapi.so
-	#libGLESmesa
+    #libGLESmesa
 	rm \
 		/system/lib/egl/libGLES_mesa.so \
 		/system/lib64/egl/libGLES_mesa.so \
 		/system/vendor/lib/egl/libGLES_mesa.so \
 		/system/vendor/lib64/egl/libGLES_mesa.so
-	#GLES-CM_EGL-orig
+    #GLES-CM_EGL-orig
 	rm \
 		/system/lib/libEGL_orig.so \
 		/system/lib/libGLESv1_CM_orig.so \
