@@ -125,10 +125,10 @@ for libX in lib lib64; do
 done
 
 # Clear dalvik-cache
-geco "\n+ Clearing dalvik-cache ..."
-[ -d "/data/dalvik-cache" ] && rm -rf /data/dalvik-cache/*
-
-
+if [ -d "/data/dalvik-cache" ]; then
+	geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot ..."
+	rm -rf /data/dalvik-cache/*
+fi
 
 
 
@@ -162,8 +162,10 @@ nout garca x -aoa -o/system $DEPDIR/mesa.bak && rm $DEPDIR/mesa.bak
 geco "Done !"; sleep 1.5
 
 # Clear dalvik-cache
-geco "\n+ Clearing dalvik-cache ..."
-[ -d "/data/dalvik-cache" ] && rm -rf /data/dalvik-cache/*
+if [ -d "/data/dalvik-cache" ]; then
+    geco "\n+ Clearing dalvik-cache, it may take a bit long on your next boot ..."
+    rm -rf /data/dalvik-cache/*
+fi
 
 # GEN_UNINS should be set to `no` for mesa packages.
 ## Cut this part into your `uninstall.sh`
