@@ -100,7 +100,7 @@ clean_job(){
 # #
 # # geco "\n+ You can not install this mesa build in android-${ANDROID_VER}"
 # #
-# # return 101 #(return-code ref: https://supreme-gamers.com/gearlock/#install-sh-return-codes)
+# # exit 101 #(exit-code ref: https://supreme-gamers.com/gearlock/#install-sh-exit-code)
 # #
 # # fi
 
