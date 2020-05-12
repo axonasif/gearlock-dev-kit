@@ -112,8 +112,7 @@ if [ ! -f $DEPDIR/mesa.bak ]; then
 fi
 
 # Cleanup mesa
-geco "\n${GREEN}Cleaning up existing mesa dri & dependencies${RC} ..."
-nout clean_job; [ "$?" != "0" ] && geco "\n+ Something went wrong, the installation can not continue ..." && return 101
+geco "\n${GREEN}Cleaning up existing mesa dri & dependencies${RC} ..." && nout clean_job
 
 # Merge mesa
 geco "\n+ Merging new mesa dri & dependencie files in your operating-system"
