@@ -1,3 +1,11 @@
+---
+Title: GearBoot Documentation
+Description: Hook into boot with GearBoot
+Author: AXON
+Date: 2020-05-05
+Template: index
+---
+
 GearBoot
 ========
 
@@ -67,13 +75,13 @@ boot-comp
 
 This is after bootanimation then you see something like `Android is loading...` in graphical interface.<br>
 To be noted that this is basically the final stage and no more stages are to come after this.<br>
-For most cases it's suggested to terget this stage for your executable.
+For most cases it's suggested to target this stage for your executable.
 
 
 Write GearBoot logfile
 ----------------------
 
-`gearboot.log` is present in `/gearlock/tmp` which holds the records of what executables were run during each boot-stage. So if you want to write somethin over your executable name in the log then you can use `write_gblog` in your gearboot-executable.
+`gearboot.log` is present in `/gearlock/tmp` which holds the records of what executables were run during each boot-stage. So if you want to write something over your executable name in the log then you can use `write_gblog` in your gearboot-executable.
 
 
 So, let's say `my-cool-program3` was your gearboot-executable and then `gearboot.log` was like
@@ -112,7 +120,7 @@ write_gblog "Opps, something wrong"
 Manual trigger
 --------------
 
-If you want to re-execute the boot executables without rebooting as a user then you can do it easily.
+If you want to re-execute the boot executables without rebooting as a user then you can do it easily. (Not recommended)
 
 From `gearboot --help`
 
@@ -132,13 +140,13 @@ Example: gearboot s2 # For executing post-fs-data executables
 ### Also check
 
 + [GearProp][GearProp] can be useful while changing props during boot
-+ Check **[GearBoot scripts][GearBoot-Scripts]** section in [GetStarted][GetStarted] page
++ Check **[GearBoot Executables][GearBoot-Executables]** section in [GetStarted][GetStarted] page
 + Take a look at [environment variables][Env-Vars]
-+ Must check out [GearLock Utilities][GearLock-Utils]
++ Must check out [GearLock Utilities][GearLock-Dev-Utils]
 
 [GetStarted]: https://supreme-gamers.com/gearlock
 [custom-core-pkg]: https://supreme-gamers.com/gearlock/#custom-core-package
-[GearLock-Utils]: https://supreme-gamers.com/gearlock/gearlock-utils
+[GearLock-Utils]: https://supreme-gamers.com/gearlock/gearlock-dev-utils
 [Env-Vars]: https://supreme-gamers.com/gearlock/environment-variables
-[GearProp]: https://supreme-gamers.com/gearlock/gearlock-utils#gearprop
-[GearBoot-Scripts]: https://supreme-gamers.com/gearlock/#gearboot-scripts
+[GearProp]: https://supreme-gamers.com/gearlock/gearlock-dev-utils#gearprop
+[GearBoot-Executables]: https://supreme-gamers.com/gearlock/#gearboot-executables

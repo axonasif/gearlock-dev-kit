@@ -1,5 +1,13 @@
-GearLock Utils !
-=============
+---
+Title: GearLock Dev Utils
+Description: Get idea about using the gearlock utils.
+Author: AXON
+Date: 2020-05-02
+Template: index
+---
+
+GearLock Dev Utils !
+====================
 
 Introduction
 ------------
@@ -332,6 +340,7 @@ gearprop
 --------
 
 `gearprop` can help when you need to modify multiple system props.<br>
+It also got the capability to force overwrite any kind of property. (Bypassing `setprop` limitations)
 There are two ways you can acheive this, which are:
 
 - Through a variable
@@ -363,15 +372,17 @@ Note: You must always use quotes `" "` while calling your variable.
 
 This is also pretty simple and straightforward.<br>
 Just like the variable method, define your props in `<prop> <value>` format in your text file.<br>
-Then you have to use the `-f` option in `gearprop`
 
 Let's assume you have a text file named `myprops.sh`
 
 **Then you can do:**
 
 ```
-gearprop -f myprops.sh
+gearprop myprops.txt
 ```
+
+Extra notes: You can define your props in `<prop>=<value>` format also but thats deprecieated.
+Also, you can specify multiple variable or files together. GearProp initially passess all the processed data to `gearprop-helper` and it does the rest.
 
 **gearprop alternative:** `setprop`
 
@@ -412,6 +423,8 @@ garc
 ----
 
 `garc` is basically a fork of 7z. You can use it to extract almost any archive.
+
+Note: `garc` comes with additional `zstd` support.
 
 - Basic Syntax
 
@@ -493,25 +506,6 @@ Usage: garc <command> <switches> <archive_name>
 
 **garc alternatives:** `7z` `tar` `gzip` `bzip2` `cpio` `zcat` `zip`
 
-gsudo
------
-
-This is something which you really don't need to care about, you should only care about it as a user and you don't need to use it **inside** GearLock since GearLock runs as `root:root` ug by default.
-
-The android_x86 tty actions are done over the `root:shell` usergroup.
-Which causes some executable binaries to be working in a wrong manner even while it's still the root user partially.
-
-For example,
-+ If you try to extract any .7z archive with p7zip then you will notice that the source permissions of the archive wasnt preserved.
-+ The same happens with most other executable binaries also, such as cpio, gzip etc.
-
-Gsudo alter the default su for running commands as root while perserving the current environment and uses bash.
-So, you can use gsudo without leaving the current shell just like any `sudo` that you find on **unix** distros.
-Gsudo acts within the `root:root` usergroup rather than `root:shell`.
-
-Usage: `gsudo <any-regular-command>`
-
-Example: `gsudo mkdir /data/new`
 
 get_base_dir
 ------------
@@ -544,7 +538,7 @@ Example script for practice:
 get_net_stat
 
 # Now perform action on condition (a simple example, can be done in many ways)
-if [ $? = 0 ]; then
+if [ "$NET_CONN" = "yes" ]; then
 
     geco "Yay, you're connected with the internet ...!"
     
@@ -553,7 +547,7 @@ if [ $? = 0 ]; then
 else
 
     geco "Sorry, I can't work without internet connection :("
-    exit 0
+    exit 1
 
 fi
 ```
@@ -568,12 +562,12 @@ Usage: `check_compat <minimum-terget-version>`
 Example:
 
 ```
-check_compat 6.0
+check_compat 6.4
 ```
 
-Let's say the user is running `GearLock 5.9`, thus it will return `1` as the return-code and an additional variable as `COMPAT=no`.
+Let's say the user is running `GearLock 6.1`, thus it will return `1` as the return-code and an additional variable as `COMPAT=no`.
 
-While if the user is running `GearLock 6.0` or higher version it will return `0` and `COMPAT=yes`
+While if the user is running `GearLock 6.1` or higher version it will return `0` and `COMPAT=yes`
 
 linux utils
 ------------
@@ -584,65 +578,79 @@ Take a look at `/gearlock/bin` to know about all the linux utils which are avail
 ```bash
 ls /gearlock/bin
 
- 2to3                      choom           e2scrub          ftpput         i2cdetect   losetup        mountpoint         print              sed                 tabs           unlzma
- 2to3-3.8                  chown           e2scrub_all      fuser          i2cdump     ls             mpstat             printf             selinuxenabled      tac            unlzop
- 7z                        chpst           e2undo           g              i2cget      lsattr         mv                 prlimit            sendmail            tail           unshare
- 7za                       chroot          e4crypt          garc           i2cset      lscpu          mypid              ps                 seq                 tar            unxz
-'['                        chrt            echo             garca          i386        lsipc          namei              pscan              seq,                taskset        unzip
-'[['                       chvt            ed               gawk           iconv       lsmod          nameif             pstree             sestatus            tc             updatedb
- acpi                      ckdirex         egrep            gawk-5.0.1     id          lsof           nanddump           ptx                setarch             tcpsvd         uptime
- acpid                     cksum           eject            gbash          idle        lspci          nandwrite          push               setconsole          tee            usleep
- add-trusted-certificate   clear           env              gbjob          idle3       lsscsi         nano               pv                 setenforce          telnet         uudecode
- addpart                   cmp             ether-wake       gbjob.enc      idle3.8     lsusb          nbd-client         pwcat              setfattr            telnetd        uuencode
- adjtimex                  col             expand           gclone         ifconfig    lzcat          nc                 pwd                setfont             test           uuidgen
- apropos                   colcrt          expr             gdbm_dump      ifdown      lzcmp          ncursesw6-config   pwdx               setkeycodes         tftp           vconfig
- ar                        colrm           factor           gdbm_load      ifenslave   lzdiff         netcat             pydoc              setlogcons          tftpd          vdir
- arch                      column          fakeidentd       gdbmtool       ifplugd     lzegrep        netstat            pydoc3             setpgid             tic            vi
- arp                       comm            fallocate        gdload         ifup        lzfgrep        newc.fs            pydoc3.8           setpriv             time           vmstat
- arping                    compile_et      false            gearboot       inetd       lzgrep         newc.fs.enc        python             setserial           timeout        volname
- ascii                     conspy          fatattr          gearboot.enc   infocmp     lzless         nice               python-config      setsid              toe            watch
- ash                       coreutils       fbset            gearinit       infotocap   lzma           nl                 python3            setterm             top            watchdog
- awk                       count           fbsplash         gearinit.enc   inotifyd    lzmadec        nmeter             python3-config     setuidgid           touch          wc
- b2sum                     cp              fdflags          gearlock       insmod      lzmainfo       nohup              python3.8          sh                  toybox         wdctl
- badblocks                 cpio            fdflush          gearlock.enc   install     lzmore         nologin            python3.8-config   sha1sum             tput           wget
- base                      crc32           fdformat         gearprop       ionice      lzop           nout               raidautorun        sha224sum           tr             whatis
- base32                    crond           fdisk            gearprop.enc   iorenice    lzopcat        nproc              rdate              sha256sum           traceroute     whereis
- base64                    crontab         fetch            gearrec        iostat      make_ext4fs    nsenter            rdev               sha384sum           traceroute6    which
- basename                  csplit          fetch.enc        gearrec.enc    iotop       makedevs       nslookup           readahead          sha3sum             tree           whiptail
- basenc                    ctrlaltdel      fgconsole        gecca          ip          makemime       nsnake             readlink           sha512sum           true           whoami
- bash                      cttyhack        fgrep            geco           ipaddr      makewhatis     nuke               readprofile        showfigfonts        truec          whois
- bashbug                   curl            figlet           gecpc          ipcalc      man            numfmt             realpath           showkey             truec.enc      wipefs
- bbconfig                  curl-config     figlist          getconf        ipcrm       mandoc         od                 reboot             shred               truefalse      xargs
- bc                        cut             file             getenforce     ipcs        matchpathcon   oneit              reformime          shuf                truncate       xxd
- beep                      date            filefrag         getopt         iplink      mcookie        openssl            remountfs          slattach            ts             xz
- blkdiscard                dc              fincore          gfe            ipneigh     md5sum         openvt             remountfs.enc      sleep               tset           xzcat
- blkid                     dd              find             gfe.enc        iproute     mesg,          pacman             rename             smemcap             tsort          xzcmp
- blkzone                   deallocvt       findfs           gink           iprule      microcom       pacmanedit         renice             sntp                tty            xzdec
- blockdev                  debugfs         finfo            gkillapp       iptunnel    mix            partprobe          reset              soelim              ttysize        xzdiff
- brctl                     delpart         fixextfs         gkillapp.enc   isosize     mk_cmds        partx              resize             softlimit           tunctl         xzegrep
- bunzip2                   demandoc        fixextfs.enc     grcat          join        mkbootimg      passwd             resize2fs          sort                tune2fs        xzfgrep
- busybox                   depmod          fixscreen        grep           kbd_mode    mkdir          paste              resizepart         split               ubiattach      xzgrep
- busybox.alt               devmem          flash_eraseall   groups         kill        mkdosfs        patch              restorecon         sqlite3             ubidetach      xzless
- bzcat                     df              flash_lock       gsdir          killall     mke2fs         patchelf           resume             ssl_client          ubimkvol       xzmore
- bzcmp                     dhcprelay       flash_unlock     gsdir.enc      killall5    mkfifo         pathchk            rev                start-stop-daemon   ubirename      yes
- bzdiff                    dialog          flock            gslr           klogd       mkfs           pcre-config        rfkill             stat                ubirmvol       zcat
- bzgrep                    diff            fmt              gslr.enc       ldattach    mkfs.bfs       pcre2-config       rm                 stdbuf              ubirsvol       zcip
- bzip2                     dir             fold             gsudo          less        mkfs.cramfs    pcre2grep          rmdir              strftime            ubiupdatevol   zcmp
- bzip2recover              dircolors       frcode           gsudo.enc      lessecho    mkfs.ext2      pcre2test          rmmod              strings             udhcpc         zdiff
- bzless                    dirname         free             gunzip         lesskey     mkfs.ext3      pcregrep           rmt                stty                udhcpc6        zegrep
- bzmore                    dmesg           freeramdisk      gzexe          link        mkfs.ext4      pcretest           rnano              sudo                udhcpd         zfgrep
- c_rehash                  dnsd            fsck             gzip           linux32     mkfs.minix     pgrep              route              sum                 udpsvd         zforce
- cal                       dnsdomainname   fsck.cramfs      hardlink       linux64     mkfs.reiser    pidof              rsync              sv                  uevent         zgrep
- captoinfo                 dos2unix        fsck.ext2        hd             ln          mkfs.vfat      ping               rtcwake            svc                 ul             zless
- cat                       du              fsck.ext3        hdparm         loadfont    mklost+found   ping6              run-init           svlogd              ulimit         zmore
- catv                      dumpe2fs        fsck.ext4        head           loadkmap    mknod          pipe_progress      run-parts          svok                umount         znew
- chat                      dumpkmap        fsck.minix       help           locate      mkpasswd       pivot_root         runcon             swaplabel           uname          zramctl
- chattr                    dumpleases      fsfreeze         hexdump        logger      mkswap         pkill              runsv              swapoff             uname26
- chcon                     e2freefrag      fstrim           hexedit        login       mktemp         pmap               runsvdir           swapon              uncompress
- chcpu                     e2fsck          fstype           hostname       logname     modinfo        popmaildir         rx                 switch_root         unexpand
- chgrp                     e2image         fsync            httpd          logread     moon-buggy     poweroff           script             sync                uniq
- chkfont                   e2label         ftpd             hush           logsave     more           powertop           scriptlive         sysctl              unix2dos
- chmod                     e2mmpstatus     ftpget           hwclock        look        mount          pr                 scriptreplay       syslogd             unlink
+ 2to3                      cp              fsck.ext2           hexedit     lzmore             pcre2test          setsid              umount
+ 2to3-3.8                  cpio            fsck.ext3           hostname    lzop               pcregrep           setterm             uname
+ 7z                        crc32           fsck.ext4           httpd       lzopcat            pcretest           setuidgid           uname26
+ 7za                       crond           fsck.minix          hwclock     make_ext4fs        pgrep              sh                  uncompress
+'['                        crontab         fsfreeze            i2cdetect   makemime           pidof              sha1sum             unexpand
+'[['                       csplit          fstrim              i2cdump     makewhatis         ping               sha224sum           uniq
+ acpi                      ctrlaltdel      fstype              i2cget      man                pipe_progress      sha256sum           unix2dos
+ add-trusted-certificate   curl            fsync               i2cset      mandoc             pivot_root         sha384sum           unlink
+ addpart                   curl-config     ftpd                i386        mcookie            pkill              sha3sum             unlzma
+ apropos                   cut             ftpget              iconv       md5sum             pmap               sha512sum           unlzop
+ ar                        date            ftpput              id          mix                popmaildir         showfigfonts        unpackbootimg
+ arch                      dc              funzip              idle        mk_cmds            pr                 shred               unshare
+ arp                       dd              fuser               idle3       mkbootimg          print              shuf                unxz
+ arping                    debugfs         g                   idle3.8     mkdir              printenv           sleep               unzip
+ ascii                     delpart         garc                ifconfig    mkdosfs            printf             smemcap             unzipsfx
+ ash                       demandoc        garca               infocmp     mke2fs             prlimit            sntp                unzstd
+ awk                       depmod          gawk                infotocap   mkfifo             ps                 soelim              updatedb
+ b2sum                     dialog          gawk-5.0.1          inotifyd    mkfs               pscan              softlimit           uptime
+ badblocks                 diff            gbash               insmod      mkfs.bfs           pstree             sort                usleep
+ base                      dir             gclone              install     mkfs.cramfs        ptx                split               uudecode
+ base32                    dircolors       gdbm_dump           ionice      mkfs.ext2          push               sqlite3             uuencode
+ base64                    dirname         gdbm_load           iorenice    mkfs.ext3          pv                 start-stop-daemon   uuidgen
+ basename                  dmesg           gdbmtool            iostat      mkfs.ext4          pwcat              stat                vconfig
+ basenc                    dnsdomainname   gdload              iotop       mkfs.minix         pwd                stdbuf              vdir
+ bash                      dos2unix        gearboot            ip          mkfs.vfat          pwdx               strftime            vi
+ bashbox                   du              gearboot.enc        ipaddr      mklost+found       pydoc              strings             vmstat
+ bashbug                   dumpe2fs        gearhost            ipcalc      mknod              pydoc3             stty                watch
+ bbconfig                  e2freefrag      gearhost.enc        iplink      mkpasswd           pydoc3.8           sudo                wc
+ bc                        e2fsck          gearinit            ipneigh     mkrecovery         python             sum                 wdctl
+ blkdiscard                e2image         gearinit.enc        iproute     mkrecovery.enc     python-config      sv                  wget
+ blkid                     e2label         gearlock            iprule      mkrecovery.multi   python3            svlogd              whatis
+ blkzone                   e2mmpstatus     gearlock-cli        iptunnel    mkswap             python3-config     swaplabel           whereis
+ blockdev                  e2scrub         gearlock-cli.enc    isosize     mktemp             python3.8          swapoff             which
+ brctl                     e2scrub_all     gearlock-post       join        modinfo            python3.8-config   swapon              whiptail
+ bunzip2                   e2undo          gearlock-post.enc   kill        moon-buggy         rdate              switch_root         whoami
+ busybox                   e4crypt         gearlock.enc        killall     more               readahead          sync                whois
+ bzcat                     echo            gearprop            killall5    mount              readlink           sysctl              wipefs
+ bzcmp                     ed              gearprop-helper     ldattach    mountpoint         readprofile        tabs                xargs
+ bzdiff                    egrep           gearprop.enc        less        mpstat             realpath           tac                 xxd
+ bzgrep                    env             gearrec             lessecho    mv                 reboot             tail                xz
+ bzip2                     envdir          gearrec.enc         lesskey     mypid              reformime          tar                 xzcat
+ bzip2recover              expand          gecca               link        namei              remountfs          taskset             xzcmp
+ bzless                    expr            geco                linux32     nano               remountfs.enc      tc                  xzdec
+ bzmore                    factor          gecpc               linux64     nc                 rename             tcpsvd              xzdiff
+ c_rehash                  fallocate       getconf             ln          ncursesw6-config   renice             tee                 xzegrep
+ cal                       false           getopt              loadfont    neofetch           reset              telnet              xzfgrep
+ captoinfo                 fdflags         gfe                 locate      netcat             resize             telnetd             xzgrep
+ cat                       fdisk           gfe.enc             logger      netstat            resize2fs          test                xzless
+ catv                      fetch           gink                login       nice               resizepart         tftp                xzmore
+ chattr                    fetch.enc       gkillapp            logname     nl                 rev                tftpd               yes
+ chcon                     fetch.in        gkillapp.enc        logsave     nmeter             rfkill             tic                 zcat
+ chcpu                     fetch.in.enc    grcat               look        nohup              rm                 time                zcmp
+ chgrp                     fgconsole       grep                losetup     nout               rmdir              timeout             zdiff
+ chkfont                   fgrep           groups              ls          nproc              rmmod              toe                 zegrep
+ chmod                     figlet          gsdir               lsattr      nsenter            rmt                top                 zfgrep
+ choom                     figlist         gsdir.enc           lscpu       nsnake             rnano              touch               zforce
+ chown                     file            gslr                lsipc       numfmt             route              toybox              zgrep
+ chpst                     filefrag        gslr.enc            lsmod       od                 rsync              tput                zip
+ chroot                    fincore         gstatus             lsof        oneit              rtcwake            tr                  zipcloak
+ chrt                      find            gstatus.enc         lspci       openssl            run-parts          traceroute          zipgrep
+ chvt                      findfs          gsudo               lsscsi      openvt             runcon             tree                zipinfo
+ ckdirex                   finfo           gsudo.enc           lsusb       pacman             runsv              true                zipnote
+ cksum                     fixextfs        gunzip              lzcat       pacmanedit         runsvdir           truefalse           zipsplit
+ clear                     fixextfs.enc    gxpm                lzcmp       parted             rx                 truncate            zless
+ cmp                       fixscreen       gxpm.enc            lzdiff      partx              script             tset                zmore
+ col                       fixscreen.enc   gzexe               lzegrep     passwd             scriptlive         tsort               znew
+ colcrt                    flock           gzip                lzfgrep     paste              scriptreplay       tty                 zramctl
+ colrm                     fmt             halt                lzgrep      patch              sed                ttysize             zstd
+ column                    fold            hardlink            lzip        patchelf           sendmail           tunctl              zstdcat
+ comm                      frcode          hd                  lzless      pathchk            seq                tune2fs             zstdgrep
+ compile_et                free            head                lzma        pcre-config        setarch            udpsvd              zstdless
+ coreutils                 fsck            help                lzmadec     pcre2-config       setfont            ul                  zstdmt
+ count                     fsck.cramfs     hexdump             lzmainfo    pcre2grep          setpgid            ulimit
 ```
 
 **Protip:** Run `bash` in terminal and feel the real power ;) Say goodbye to `sh` !

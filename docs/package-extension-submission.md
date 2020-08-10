@@ -1,3 +1,11 @@
+---
+Title: Package / Extension Submission
+Description: Submit your GearLock Package or Extension in the official way
+Author: AXON
+Date: 2020-05-07
+Template: index
+---
+
 Submit Package/Extension
 ========================
 

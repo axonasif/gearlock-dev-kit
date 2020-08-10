@@ -1,5 +1,13 @@
-GearLock Developer Documentation
-=================================
+---
+Title: Get Started
+Description: GearLock Documentation
+Author: AXON
+Date: 2020-05-01
+Template: index
+--- 
+
+GearLock Documentation Index
+=============================
 
 Introduction
 ------------
@@ -11,8 +19,7 @@ There are two kinds of package which you can use.
 * Prebuild Kernel Package
 * Custom Core Package
 
-Note: It doesn't matter what package you use, `prebuild-kernel` package is here to make it easier on making kernel packages quickly.<br>
-There isn't any functional change between `custom-core` & `prebuild-kernel` package.
+Note: It doesn't matter what package you use, `prebuild-kernel` package is here to make it easier on making kernel packages quickly. There isn't any functional change between `custom-core` & `prebuild-kernel` package.
 
 Setup build environment
 -----------------------
@@ -156,6 +163,8 @@ DEF_HEADER="yes" #(Default -yes) Whether to use the default header which print's
 #######################################################################################################
 ```
 
+Note: All the variables in `!zygote.sh` are accessible within anything inside your package during installation.
+
 install.sh / uninstall.sh exit code
 -----------------------------------
 
@@ -176,14 +185,17 @@ If you want to push a script/executable which can operate whithin gearlock for u
 
 Once someone install your package/extension, they will be able to execute the `extension` through `GearLock > Extensions`
 
+Note: You don't have to manually copy or remove `extension.sh`, GearLock will take care of that.
+
 If you're using [custom-core][cus-core-pkg] package and if you don't want to make an extension then you must delete `./gearlock/extension.sh`
 
-**Protip:** For live-testing how a extension works, put any executable on [$GHOME](https://supreme-gamers.com/gearlock/environment-variables#ghome)/extensions<br>Then do `GearLock > Extensions`
+**Protip:** For live-testing how a extension works, put any executable on [$GHOME][GHOME-ENV]/extensions<br>Then do `GearLock > Extensions`
 
-GearBoot scripts
-----------------
+GearBoot Executables
+--------------------
 
-GearBoot scripts are executed during boot.<br>
+GearBoot executables are executed during boot.<br>
+Note: You don't have to manually copy or remove gearboot executables, GearLock will take care of that.
 Check [custom-core][cus-core-pkg] package structure and [GearBoot][GearBoot] page.
 
 Uninstallation modes
@@ -205,9 +217,10 @@ Only merge generated uninstallation script
 
 Only merge `uninstall.sh`
 
-Note: If you don't script any custom uninstallation code in `uninstall.sh` then you can either remove that file or just leave it as-is.
+Note: If you don't script any custom uninstallation code in `uninstall.sh` then you can either remove that file or just leave it as-is. Also, You don't have to manually copy or deal with `uninstall.sh`, GearLock will take care of putting it in the right place and removing it when necessary
 
-<br>When `GEN_UNINS` is set to `yes`, GearLock will generate an uninstallation script based on the files that you put on either `system` or `data` folder.
+<br>When `GEN_UNINS` is set to `yes`, GearLock will generate an uninstallation script based on the files that you put on either `system` or `data` folder. You can also mix up/use `GEN_UNINS` and your custom `uninstall.sh` together.
 
 [cus-core-pkg]: https://supreme-gamers.com/gearlock/#page-toc-2
 [GearBoot]: https://supreme-gamers.com/gearlock/gearboot
+[GHOME-ENV]: https://supreme-gamers.com/gearlock/environment-variables#ghome

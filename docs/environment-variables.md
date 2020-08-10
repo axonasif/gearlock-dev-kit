@@ -1,3 +1,11 @@
+---
+Title: Environment Variables
+Description: Make the good use of all the available Environment Variables.
+Author: AXON
+Date: 2020-05-04
+Template: index
+---
+
 Environment Variables
 =====================
 
@@ -30,6 +38,9 @@ Variables
 | HOST_ARCH |  |  |
 | BOOTCOMP |  |  |
 | KERNEL_IMAGE |  |  |
+| GEARLOCK_RC |  |  |
+| ANDROID_GUI |  |  |
+| GEARLOCK_APP |  |  |
 
 GRROOT_DIR
 ----------
@@ -44,8 +55,6 @@ GRROOT
 This is the place where the actual `android-x86` OS files exist.
 
 By this I mean the place where you find files like `initrd.img` `ramdisk.img` `kernel`
-
-GearBoot searches for the `kernel` file in `$GRROOT_DIR` to determine this var, this is done in cases when the OS files are present in a separate folder in the partition.
 
 On calling this var it will return the directory path where the actual OS files exist.
 
@@ -92,10 +101,11 @@ Returns current year.
 GHOME
 ------
 
-`ghome` is the place where GearLock stores extensions, gearboot scripts, common dependencie directory, status log files.
+`ghome` is the place where GearLock stores extensions, gearboot scripts, common dependencie directory, status log files. It also contains the `.gearlockrc`
 
-If gearlock came pre-installed into your system then `$GHOME` path is `/system/ghome`<br>
-While if it was a manual installation then `$GHOME` path is `/data/ghome`
+If gearlock came pre-installed into your system then `$GHOME` path should be `/system/ghome`<br>
+While if it was a manual installation then `$GHOME` path should be `/data/ghome`
+Note: It doesn't matter even if you move swap it between `/system` & `/data`.
 
 Other vars depended on `$GHOME` >
 
@@ -138,3 +148,18 @@ KERNEL_IMAGE
 ------------
 
 Full accessible path to currently booted kernel image.
+
+GEARLOCK_RC
+-----------
+
+Full path to `.gearlockrc` file within `$GHOME`.
+
+ANDROID_GUI
+-----------
+
+Returns `yes` when the user is using GearLock from within the GUI (Except tty) throough some terminal emulation application.
+
+GEARLOCK_APP
+------------
+
+Returns `yes` when the user is using GearLock terminal application.
