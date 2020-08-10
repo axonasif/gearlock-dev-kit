@@ -373,7 +373,7 @@ Note: You must always use quotes `" "` while calling your variable.
 This is also pretty simple and straightforward.<br>
 Just like the variable method, define your props in `<prop> <value>` format in your text file.<br>
 
-Let's assume you have a text file named `myprops.sh`
+Let's assume you have a text file named `myprops.txt`
 
 **Then you can do:**
 
