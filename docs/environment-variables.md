@@ -39,7 +39,7 @@ Variables
 | BOOTCOMP |  |  |
 | KERNEL_IMAGE |  |  |
 | GEARLOCK_RC |  |  |
-| ANDROID_GUI |  |  |
+| TERMINAL_EMULATOR |  |  |
 | GEARLOCK_APP |  |  |
 
 GRROOT_DIR
@@ -154,12 +154,12 @@ GEARLOCK_RC
 
 Full path to `.gearlockrc` file within `$GHOME`.
 
-ANDROID_GUI
------------
+TERMINAL_EMULATOR
+-----------------
 
-Returns `yes` when the user is using GearLock from within the GUI (Except tty) throough some terminal emulation application.
+Returns `yes` when the user is using GearLock from within the GUI (Except tty) throough some terminal emulation application. (This includes `$GEARLOCK_APP` also)
 
 GEARLOCK_APP
 ------------
 
-Returns `yes` when the user is using GearLock terminal application.
+Returns `yes` when GearLock terminal application is running.
