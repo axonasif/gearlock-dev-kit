@@ -63,6 +63,8 @@ HOST_ARCH
 
 On calling this var it returns either `x86` or `x86_64`
 
+Note: This is not 100% accurate since it's depended on lib64 dir existence. (A better implementaion is suggested)
+
 ANDROID_VER
 -----------
 
@@ -78,7 +80,7 @@ Return's the SDK version code.
 GBRUNTIME
 ---------
 
-The value of this var is set to `yes` when `GearBoot` is running during boot.
+The value of this var is set to `yes` when `GearBoot` is running during boot. Otherwise it's empty.
 
 Example:
 
@@ -132,7 +134,7 @@ Returns the path for `gearload` directory
 RECOVERY
 --------
 
-When the user is running **GearLock** in early **Recovery** mode this is set to **yes**.
+When the user is running **GearLock** in early **Recovery** mode this is set to **yes**. Otherwise it's empty.
 
 IT
 ---
@@ -142,7 +144,7 @@ The interface which is being used. From either classic or metro.
 BOOTCOMP
 --------
 
-Is `yes` or not empty once the OS has completely landed on GUI.
+Is `yes` or not empty once the OS has completely landed on GUI. Otherwise it returns `no`.
 
 KERNEL_IMAGE
 ------------
@@ -157,9 +159,9 @@ Full path to `.gearlockrc` file within `$GHOME`.
 TERMINAL_EMULATOR
 -----------------
 
-Returns `yes` when the user is using GearLock from within the GUI (Except tty) throough some terminal emulation application. (This includes `$GEARLOCK_APP` also)
+Returns `yes` when the user is using GearLock from within the GUI (Except tty) throough some terminal emulation application. (This includes `$GEARLOCK_APP` also). Otherwise it returns `no`.
 
 GEARLOCK_APP
 ------------
 
-Returns `yes` when GearLock terminal application is running.
+Returns `yes` when GearLock terminal application is running. Otherwise it returns `no`.
