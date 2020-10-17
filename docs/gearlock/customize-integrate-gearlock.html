@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="author" content="AXON, https://supreme-gamers.com">
+<meta name="description" content="GearLock customization guide for users and developers.">
+<title>Integrate / Customize GearLock | GearLock Documentation</title>
+<link rel="stylesheet" href="themes/grl/styles/main.min.css" type="text/css" />
+<link rel="stylesheet" href="themes/grl/styles/highlightjs-github.css" type="text/css" />
+</head>
+<body>
+<aside class="main-nav">
+<nav>
+<ul>
+<li class="menuitem ">
+<a href="../gearlock.html" data-shortcut="">
+Get Started
+</a>
+</li>
+<li class="menuitem ">
+<a href="gearlock-dev-utils.html" data-shortcut="">
+GearLock Dev Utils
+</a>
+</li>
+<li class="menuitem ">
+<a href="gearlock-user-utils.html" data-shortcut="">
+GearLock User Utils
+</a>
+</li>
+<li class="menuitem ">
+<a href="environment-variables.html" data-shortcut="">
+Environment Variables
+</a>
+</li>
+<li class="menuitem ">
+<a href="gearboot-documentation.html" data-shortcut="">
+GearBoot Documentation
+</a>
+</li>
+<li class="menuitem active">
+<a href="customize-integrate-gearlock.html" data-shortcut="">
+Integrate / Customize GearLock
+</a>
+</li>
+<li class="menuitem ">
+<a href="package-extension-submission.html" data-shortcut="">
+Package / Extension Submission
+</a>
+</li>
+</ul>
+</nav>
+</aside>
+<main class="main-content">
+<article class="article">
+<h1>Customizing GearLock at it's best</h1>
+<p>GearLock is seriously extensive and customizable. In this page I will try to brief most of the customization options available for GearLock. Which covers the usage of <code>gearlockrc</code> and use of <code>hook</code> alongside some other miscellaneous customization options.</p>
+<h2>GEARLOCKRC</h2>
+<p><a href="environment-variables.html#ghome">$GHOME</a>/<strong>.gearlockrc</strong> file gets loaded by GearLock core and it contains some of the GearLock settings that you can re-configure. Also, it can be used to overwite any of the core variables or functions of GearLock. This customization file can be also used to handle <code>hook</code>.</p>
+<blockquote>
+<p>Here is the preview of default <code>gearlockrc</code> file.</p>
+</blockquote>
+<blockquote>
+<p>Note: It can be outdated here, better check on your local version.</p>
+</blockquote>
+<blockquote>
+<p>Most of the common options in this file can be also configured through <code>GearLock Ui &gt; Settings</code>.</p>
+</blockquote>
+<pre><code class="language-bash">##### GearLock Configuration File
+### This configuration file is loaded by GearLock core.
+### And is also used by all other sub gearlock applications during their runtime.
+### This configuration file gets modified when you change `Settings` through Gearock Ui.
+### You can override any CORE variable or function through this configuration file. (Do not modify unless you want to change the defaults)
+### Please check `https://supreme-gamers.com/gearlock/customize-integrate-gearlock` to learn more.
+
+
+
+## Boot Sound
+# You can specify your own bootsound in wav format.
+# Remove/Empty/put-something-else in this variable if you want to disable bootsound.
+BOOTSOUND="/gearlock/etc/bootsound.wav"
+
+## Update Check
+# GearLock periodically checks for update
+# You can either set this variable to `no` or remove it.
+UPDATE_CHECK="yes"
+
+## Secondary TTY
+# GearLock spawns a secondary tty that you get on pressing `ALT+F8`
+# You can disable it if you like by either setting to `no` or removing it.
+SECOND_GTTY="yes"
+
+## Default GearLock Interface Theme
+# Since you know that GearLock currently comes with two themes, so you might wanna set a default
+# The current theme keycoddes are: `metro`, `classic`
+DEFAULT_THEME="notset"
+
+
+# # ## Below I'm referencing some sensitive configurations that you can change.
+# # ## It is not recommended to modify these unless you know what you're doing.
+# # ## Remove all `# #` to modify.
+# # 
+# # 
+# # ## GRROOT_DIR
+# # # This is the mountpoint folder where your OS-PARTITION is mounted.
+# # GRROOT_DIR="/gearlock/gearroot"
+# # 
+# # ## GRROOT
+# # # GROOT is the place where files like `ramdisk.img` &amp; `initrd.img` exist.
+# # # It is basically nedded in cases when your android-x86 distro is installed under a subdirectory in your OS-PARTITION.
+# # # GearLock auto detects the correct path, do not override this unless necessary.
+# # GRROOT="$GRROOT_DIR/example-folder"
+# # 
+# # ## GHOME
+# # # ghome is the place where GearLock store a lot of things for it's work process.
+# # # GBDIR, DEPDIR, STATDIR, UNINSDIR etc. are depended on this variable.
+# # GHOME="/system/ghome"
+# # 
+# # ## Host Processor Architecture
+# # HOST_ARCH="x86_64"
+# # 
+# # ## Android version
+# # ANDROID_VER="7.1"
+# # 
+# # ## HOOKDIR
+# # # This is the directory path for hooking files inside GearLock core.
+# # HOOKDIR="$GHOME/hook"
+# # 
+# # ## HOOK_DEL_FILES
+# # # If you want to delete core file/folder before GearLock load files from your $HOOK_DIR
+# # HOOK_DEL_FILES=(
+# # "/gearlock/core/src.main/10"
+# # "/gearlock/core/help"
+# # )</code></pre>
+<h2>GHOME</h2>
+<p>Read about $GHOME at <a href="environment-variables.html#ghome">Environment-Variables</a> page. If you're a developer and want to pre-define some settings and stuff then you can have your custom <code>ghome</code> dir as <code>/system/ghome</code>.</p>
+<h2>HOOK</h2>
+<p>If you're a developer and willing to integrage GearLock in your android-x86 build then <code>hook</code> can be useful to you. GearLockUi default menu structure and most of the sub-elements of GearLock is <strong>dynamic</strong> and can be modified/extended easily. If you look at <code>/gearlock/core</code> and try to understand then it could be more clear to you.</p>
+<p>The concept of <code>hook</code> is pretty simple. It is mainly there to merge everything from <a href="environment-variables.html#ghome">$GHOME</a>/<strong>hook</strong>/* into <code>/gearlock/</code>.
+So that you can modify core files of gearlock without having to touch the actual core.</p>
+<p>You can also make the use of <code>HOOK_DEL_FILES</code> in <code>gearlockrc</code> to delete any file within <code>/gearlock/*</code> before GearLockUi runtime and loading hook.</p>
+<h4>Here is a messy tutorial about changing or adding a new item in <code>GearLock Main-Menu</code></h4>
+<p>So let's say you want to add your own menu item in <code>GearLock Main-Menu</code>.</p>
+<p>But there is one problem you got, if you directly extract the <code>gearlock</code> cpio image which gets loded on each boot to modify the menu-structure then that's not reliable since your modifications will get lost on any future GearLock updates that the user will receieve. And everything inside <code>hook</code> dir gets replaced with the actual GearLock core before the Ui runtime.</p>
+<p>And for that you can do the following:</p>
+<ul>
+<li>
+<p>Now if you look at <code>/gearlock/core/main.src</code> and <code>/gearlock/core/main.src/_lang_/_menu_en</code> you will realize these are what responsible for the GearLock Ui Main-Menu. It mainly calls the other sub-menus at <code>/gearlock/core/*src</code> and executes them as required.</p>
+</li>
+<li>
+<p>Make a directory named <code>hook</code> at <a href="environment-variables.html#ghome">$GHOME</a> and then it'd be <a href="environment-variables.html#ghome">$GHOME</a>/<strong>hook</strong></p>
+</li>
+<li>
+<p>Now if you wanna add a new menu element at the main-menu there are two things that you will need to replace/add.</p>
+<blockquote>
+<p>For example, they could be:
+<code>/gearlock/core/main.src/_lang_/_menu_en</code> (Menu file with your new menu item record at end of line) &amp;&amp; <code>/gearlock/core/main.src/X</code> (Your item executable)</p>
+</blockquote>
+</li>
+<li>
+<p>Now what you need to do in your <code>hook</code> dir is, make another dir called <code>core</code> inside your <code>hook</code> dir. In the same way make other chid directories while replicating the actual <code>/gearlock/core/*</code> structure depending on your neeeds. After that place the corresponding files that you want to get replaced before GearLockUi runs.</p>
+</li>
+</ul>
+<h2>Building GearLock inside AOSP-x86 source</h2>
+<p>If you are compiling android-x86 from source and want to include GearLock with your builds then you can use this external repository containing patches for the aosp-x86 source.</p>
+<pre><code>https://github.com/AXIM0S/bootable_gearlock</code></pre>
+<p>Although, you could also boot into your OS and use the <code>gearlock-installer</code> executable and then pack up the patched <code>initrd.img</code> and <code>gearlock(cpio image)</code>. Then modify <code>install.img/scripts/0-install</code> to copy <code>gearlock</code> image during installation.</p>
+</article>
+</main>
+<nav class="page-toc">
+<ul id="page-toc-container">
+</ul>
+</nav>
+<script src="themes/grl/scripts/highlight.js"></script>
+<script src="themes/grl/scripts/mousetrap.min.js"></script>
+<script src="themes/grl/scripts/clipboard.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/anchor-js/anchor.min.js"></script>
+<script src="../styles/assets/darkmode-js.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+
+  document.querySelectorAll('.menuitem a').forEach(function(el) {
+    if (el.getAttribute('data-shortcut').length > 0) {
+      Mousetrap.bind(el.getAttribute('data-shortcut'), function() {
+        location.assign(el.getAttribute('href'));
+      });
+    }
+  });
+
+  /**
+   * Generate page table of contents
+   *
+   * Get all H2 elements and render them in a list
+  **/
+  function generatePageTOC() {
+    var tocContainer = document.getElementById('page-toc-container');
+
+    document.querySelectorAll('.article h2').forEach(function(el, index) {
+      // Insert a marker since anchor links breaks with css position sticky
+      // sticky headers upwards are stacked at the top of the viewport
+      // and therefore cannot be jumped to since they are already visible
+      // Instead inject a hidden element to use as a scroll marker
+      el.insertAdjacentHTML('beforebegin', '<i id="page-toc-'+index+'" class="page-toc-scroll-marker">TOC marker</i>');
+
+      var newTocNavItem = document.createElement('li');
+      var newTocNavItemLink = document.createElement('a');
+      var newTocNavItemText = document.createTextNode(el.textContent);
+
+      newTocNavItemLink.setAttribute('href', '#page-toc-' + index);
+      newTocNavItemLink.appendChild(newTocNavItemText);
+      newTocNavItem.appendChild(newTocNavItemLink);
+      tocContainer.appendChild(newTocNavItem);
+    });
+  }
+  generatePageTOC();
+
+  /**
+   * Copy to clipboard
+   *
+   * Powered by https://clipboardjs.com
+  **/
+
+  new ClipboardJS('.copy-to-clipboard-btn');
+
+  // Attach id attribute to all pre > code elements and append a button
+  document.querySelectorAll('pre code').forEach(function(el, index) {
+    el.setAttribute('id', 'code-block-' + index);
+  });
+
+  // Add copy-to-clipboard buttons. Begin by wrapping all pre elements in a div...
+  document.querySelectorAll('pre').forEach(function(el, index) {
+
+    // Create the wrapper div and apply classes on it
+    var wrapper = document.createElement('div');
+    wrapper.classList.add('code-block-container');
+
+    // Place the wrapper div before the pre element
+    el.parentNode.insertBefore(wrapper, el);
+
+    // Move the pre element inside the wrapper div
+    wrapper.appendChild(el);
+
+    // Append a copy to clipboard button after each code block
+    wrapper.insertAdjacentHTML('beforeend', `
+      <button type="button" class="copy-to-clipboard-btn" data-clipboard-target="#code-block-${index}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0H24V24H0z"/><path fill="currentColor" d="M13 11L11 11 11 14 8 14 8 16 11 16 11 19 13 19 13 16 16 16 16 14 13 14z"/><path fill="currentColor" d="M19 5h-2V3h-1.142c-.447-1.72-2-3-3.858-3S8.589 1.28 8.142 3H7v2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2V7c0-1.103-.897-2-2-2zm-7-3c.739 0 1.385.402 1.731 1h-3.463c.347-.598.993-1 1.732-1zM9 5h6v2H9V5zm10 16H5V7h2v2h10V7h2v14z"/></svg>
+      </button>
+    `);
+  });
+    anchors.add();
+    new Darkmode().showWidget();
+</script>
+</body>
+</html>

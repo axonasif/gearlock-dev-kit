@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="author" content="AXON, https://supreme-gamers.com">
+<meta name="description" content="Hook into boot with GearBoot">
+<title>GearBoot Documentation | GearLock Documentation</title>
+<link rel="stylesheet" href="themes/grl/styles/main.min.css" type="text/css" />
+<link rel="stylesheet" href="themes/grl/styles/highlightjs-github.css" type="text/css" />
+</head>
+<body>
+<aside class="main-nav">
+<nav>
+<ul>
+<li class="menuitem ">
+<a href="../gearlock.html" data-shortcut="">
+Get Started
+</a>
+</li>
+<li class="menuitem ">
+<a href="gearlock-dev-utils.html" data-shortcut="">
+GearLock Dev Utils
+</a>
+</li>
+<li class="menuitem ">
+<a href="gearlock-user-utils.html" data-shortcut="">
+GearLock User Utils
+</a>
+</li>
+<li class="menuitem ">
+<a href="environment-variables.html" data-shortcut="">
+Environment Variables
+</a>
+</li>
+<li class="menuitem active">
+<a href="gearboot-documentation.html" data-shortcut="">
+GearBoot Documentation
+</a>
+</li>
+<li class="menuitem ">
+<a href="customize-integrate-gearlock.html" data-shortcut="">
+Integrate / Customize GearLock
+</a>
+</li>
+<li class="menuitem ">
+<a href="package-extension-submission.html" data-shortcut="">
+Package / Extension Submission
+</a>
+</li>
+</ul>
+</nav>
+</aside>
+<main class="main-content">
+<article class="article">
+<h1>GearBoot</h1>
+<h2>Introduction</h2>
+<p>GearBoot is a very simple program which can run executables during boot dynamically.<br>
+GearBoot supports four different boot stages.</p>
+<ul>
+<li>init</li>
+<li>post-fs</li>
+<li>post-fs-data</li>
+<li>boot-post</li>
+<li>boot-comp</li>
+</ul>
+<p>GearBoot is very lightweight and superfast. It assigns each of the executables with a unique PID.</p>
+<p>The logfile is <code>/gearlock/tmp/gearboot.log</code></p>
+<p>During GearBoot runtime <code>PATH</code> variable is set to:</p>
+<pre><code>/gearlock/bin:/sbin:/bin:/system/bin:/system/xbin:/system/vendor/bin</code></pre>
+<p>If <strong>GearLock</strong> came pre-installed in your system then gearboot dir can be found at <code>/system/ghome</code><br>
+If it was a manual installation then it should be at <code>/data/ghome</code></p>
+<p>For most developers <code>boot-comp</code> stage should be fine and shouldn't mess with other stages unless you know what you're doing!</p>
+<p><strong>Use the <a href="../gearlock.html#custom-core-package">custom-core</a> package to work with gearboot scripts</strong></p>
+<h2>Boot-Stage Defination</h2>
+<p>To be honest, the first three stages ( <code>post-fs</code> <code>post-fs-data</code> and <code>boot-post</code> ) are passed real quick but there are some key changes in between.</p>
+<p>Below I will try to explain what and how each of the gearboot stages that matter.</p>
+<h2>init</h2>
+<p>This is basically valid before you see the early console-tty blinking after grub has loaded your kernel and is about to switch on the secondary-ramdisk. In this stage android-system won't be running or active. Not a good idea to think of hooking into it unless you know what you're doing.</p>
+<h2>post-fs</h2>
+<p>There are actually a few more *early stages before <code>post-fs</code> to be completed when android-x86 switches to the secondary ramdisk. Now you might be wondering why don't we just hook those stages also ?</p>
+<p>In simple words, it's literally unnecessary and not really a good thing to do. Even hacking into something over the <code>post-fs</code> stage also seems quite rare though.</p>
+<p>As much I can understand, this stage can be marked when you get to see the OS hostname blinking in the early tty screen (command line). This is also two steps before you see the bootanimation to be appearing.</p>
+<h2>post-fs-data</h2>
+<p>This is obviously after <code>post-fs</code> stage. During this stage, <code>build.prop</code> and most of the system modules are already loaded.
+The bootanimation comes after this stage.</p>
+<h2>boot-post</h2>
+<p>This is the beginning of bootanimation and is valid till android-x86 enter the graphical interface.</p>
+<h2>boot-comp</h2>
+<p>This is after bootanimation then you see something like <code>Android is loading...</code> in graphical interface.<br>
+To be noted that this is basically the final stage and no more stages are to come after this.<br>
+For most cases it's suggested to target this stage for your executable.</p>
+<h2>Write GearBoot logfile</h2>
+<p><code>gearboot.log</code> is present in <code>/gearlock/tmp</code> which holds the records of what executables were run during each boot-stage. So if you want to write something over your executable name in the log then you can use <code>write_gblog</code> in your gearboot-executable.</p>
+<p>So, let's say <code>my-cool-program3</code> was your gearboot-executable and then <code>gearboot.log</code> was like</p>
+<pre><code># Start of boot-post stage @ Wed XYZ
+  123456:12:44  :  boot-post  :  my-cool-program
+  123456:12:45  :  boot-post  :  my-cool-program2
+
+
+# Start of boot-comp stage @ Wed XYZ
+  123456:12:47  :  boot-comp  :  my-cool-program3
+  123456:12:48  :  boot-comp  :  my-cool-program4</code></pre>
+<p>Now, if you do this in <code>my-cool-program3</code> (bash):</p>
+<pre><code class="language-bash">write_gblog "Opps, something wrong"</code></pre>
+<p><code>gearboot.log</code> will be like:</p>
+<pre><code># Start of boot-post stage @ Wed XYZ
+  123456:12:44  :  boot-post  :  my-cool-program
+  123456:12:45  :  boot-post  :  my-cool-program2
+
+
+# Start of boot-comp stage @ Wed XYZ
+  123456:12:47  :  boot-comp  :  my-cool-program3 : Opps, something wrong
+  123456:12:48  :  boot-comp  :  my-cool-program4</code></pre>
+<h2>Manual trigger</h2>
+<p>If you want to re-execute the boot executables without rebooting as a user then you can do it easily. (Not recommended)</p>
+<p>From <code>gearboot --help</code></p>
+<pre><code>Usage:   gearboot &lt;boot-stage&gt;
+
+Example: gearboot s2 # For executing post-fs-data executables
+
+&lt;Boot-Stages&gt;
+
+    s1 : post-fs
+    s2 : post-fs-data
+    s3 : boot-post
+    s4 : boot-comp</code></pre>
+<h3>Also check</h3>
+<ul>
+<li><a href="gearlock-dev-utils.html#gearprop">GearProp</a> can be useful while changing props during boot</li>
+<li>Check <strong><a href="../gearlock.html#gearboot-executables">GearBoot Executables</a></strong> section in <a href="../gearlock.html">GetStarted</a> page</li>
+<li>Take a look at <a href="environment-variables.html">environment variables</a></li>
+<li>Must check out <a href="gearlock-dev-utils.html">GearLock Dev Utilities</a></li>
+</ul>
+</article>
+</main>
+<nav class="page-toc">
+<ul id="page-toc-container">
+</ul>
+</nav>
+<script src="themes/grl/scripts/highlight.js"></script>
+<script src="themes/grl/scripts/mousetrap.min.js"></script>
+<script src="themes/grl/scripts/clipboard.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/anchor-js/anchor.min.js"></script>
+<script src="../styles/assets/darkmode-js.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+
+  document.querySelectorAll('.menuitem a').forEach(function(el) {
+    if (el.getAttribute('data-shortcut').length > 0) {
+      Mousetrap.bind(el.getAttribute('data-shortcut'), function() {
+        location.assign(el.getAttribute('href'));
+      });
+    }
+  });
+
+  /**
+   * Generate page table of contents
+   *
+   * Get all H2 elements and render them in a list
+  **/
+  function generatePageTOC() {
+    var tocContainer = document.getElementById('page-toc-container');
+
+    document.querySelectorAll('.article h2').forEach(function(el, index) {
+      // Insert a marker since anchor links breaks with css position sticky
+      // sticky headers upwards are stacked at the top of the viewport
+      // and therefore cannot be jumped to since they are already visible
+      // Instead inject a hidden element to use as a scroll marker
+      el.insertAdjacentHTML('beforebegin', '<i id="page-toc-'+index+'" class="page-toc-scroll-marker">TOC marker</i>');
+
+      var newTocNavItem = document.createElement('li');
+      var newTocNavItemLink = document.createElement('a');
+      var newTocNavItemText = document.createTextNode(el.textContent);
+
+      newTocNavItemLink.setAttribute('href', '#page-toc-' + index);
+      newTocNavItemLink.appendChild(newTocNavItemText);
+      newTocNavItem.appendChild(newTocNavItemLink);
+      tocContainer.appendChild(newTocNavItem);
+    });
+  }
+  generatePageTOC();
+
+  /**
+   * Copy to clipboard
+   *
+   * Powered by https://clipboardjs.com
+  **/
+
+  new ClipboardJS('.copy-to-clipboard-btn');
+
+  // Attach id attribute to all pre > code elements and append a button
+  document.querySelectorAll('pre code').forEach(function(el, index) {
+    el.setAttribute('id', 'code-block-' + index);
+  });
+
+  // Add copy-to-clipboard buttons. Begin by wrapping all pre elements in a div...
+  document.querySelectorAll('pre').forEach(function(el, index) {
+
+    // Create the wrapper div and apply classes on it
+    var wrapper = document.createElement('div');
+    wrapper.classList.add('code-block-container');
+
+    // Place the wrapper div before the pre element
+    el.parentNode.insertBefore(wrapper, el);
+
+    // Move the pre element inside the wrapper div
+    wrapper.appendChild(el);
+
+    // Append a copy to clipboard button after each code block
+    wrapper.insertAdjacentHTML('beforeend', `
+      <button type="button" class="copy-to-clipboard-btn" data-clipboard-target="#code-block-${index}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0H24V24H0z"/><path fill="currentColor" d="M13 11L11 11 11 14 8 14 8 16 11 16 11 19 13 19 13 16 16 16 16 14 13 14z"/><path fill="currentColor" d="M19 5h-2V3h-1.142c-.447-1.72-2-3-3.858-3S8.589 1.28 8.142 3H7v2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2V7c0-1.103-.897-2-2-2zm-7-3c.739 0 1.385.402 1.731 1h-3.463c.347-.598.993-1 1.732-1zM9 5h6v2H9V5zm10 16H5V7h2v2h10V7h2v14z"/></svg>
+      </button>
+    `);
+  });
+    anchors.add();
+    new Darkmode().showWidget();
+</script>
+</body>
+</html>
