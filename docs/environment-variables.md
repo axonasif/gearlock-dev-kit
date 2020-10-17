@@ -41,6 +41,7 @@ Variables
 | GEARLOCK_RC |  |  |
 | TERMINAL_EMULATOR |  |  |
 | GEARLOCK_APP |  |  |
+| GEARLOCK_VER |  |  |
 
 GRROOT_DIR
 ----------
@@ -165,3 +166,8 @@ GEARLOCK_APP
 ------------
 
 Returns `yes` when GearLock terminal application is running. Otherwise it returns `no`.
+
+GEARLOCK_VER
+------------
+
+Returns GearLock version code.

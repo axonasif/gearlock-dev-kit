@@ -17,9 +17,12 @@ First of all, you will need basic scripting knowledge in bash. Not only that, if
 There are two kinds of package which you can use.
 
 * Prebuild Kernel Package
+* Prebuild Mesa Package
 * Custom Core Package
 
 Note: It doesn't matter what package you use, `prebuild-kernel` package is here to make it easier on making kernel packages quickly. There isn't any functional change between `custom-core` & `prebuild-kernel` package.
+
+Protip: If you want to build a Mesa/Kernel package easily, then the best way is to use the on-device GearLock GDK. (Means there is a option to `AutoMake Kernel/Mesa Package from your booted kernel/mesa` in `GearLock >> More >> Dev-Zone` on an android-x86 OS with GearLock installed)
 
 Setup build environment
 -----------------------
@@ -34,7 +37,7 @@ There are two ways in which you can work with gearlock packages.
 
 Either open **GearLock App** or run `gearlock` in Alt + F1 terminal.
 
-Then press `d` and you should have all the extended dev-kit options.
+Then go to `>> More >> Dev-Zone` and you should have all the extended dev-kit options.
 
 Use option `1` to setup build environment<br><br>
 

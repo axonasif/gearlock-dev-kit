@@ -142,11 +142,11 @@ Example: gearboot s2 # For executing post-fs-data executables
 + [GearProp][GearProp] can be useful while changing props during boot
 + Check **[GearBoot Executables][GearBoot-Executables]** section in [GetStarted][GetStarted] page
 + Take a look at [environment variables][Env-Vars]
-+ Must check out [GearLock Utilities][GearLock-Dev-Utils]
++ Must check out [GearLock Dev Utilities][GearLock-Dev-Utils]
 
 [GetStarted]: https://supreme-gamers.com/gearlock
 [custom-core-pkg]: https://supreme-gamers.com/gearlock/#custom-core-package
-[GearLock-Utils]: https://supreme-gamers.com/gearlock/gearlock-dev-utils
+[GearLock-Dev-Utils]: https://supreme-gamers.com/gearlock/gearlock-dev-utils
 [Env-Vars]: https://supreme-gamers.com/gearlock/environment-variables
 [GearProp]: https://supreme-gamers.com/gearlock/gearlock-dev-utils#gearprop
 [GearBoot-Executables]: https://supreme-gamers.com/gearlock/#gearboot-executables

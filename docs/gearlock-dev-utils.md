@@ -101,16 +101,6 @@ Output:
 ```
 
 
-#### gecprog
--------------
-
-`gecprog` Can be used to print a animated working progress.
-
-Usage: 
-
-```bash
-(your-commands-here) & gecprog "Progress Text to print before the animated meter"
-```
 
 ### Advanced geco usage
 -----------------------
@@ -315,7 +305,7 @@ gkillapp can easily stop a running android app with the package-id.
 - Example
 
 ```
-gkillapp com.google.vending
+gkillapp "com.google.vending"
 ```
 
 Note: If the app is not running then gkillapp will print an error message.
@@ -578,79 +568,62 @@ Take a look at `/gearlock/bin` to know about all the linux utils which are avail
 ```bash
 ls /gearlock/bin
 
- 2to3                      cp              fsck.ext2           hexedit     lzmore             pcre2test          setsid              umount
- 2to3-3.8                  cpio            fsck.ext3           hostname    lzop               pcregrep           setterm             uname
- 7z                        crc32           fsck.ext4           httpd       lzopcat            pcretest           setuidgid           uname26
- 7za                       crond           fsck.minix          hwclock     make_ext4fs        pgrep              sh                  uncompress
-'['                        crontab         fsfreeze            i2cdetect   makemime           pidof              sha1sum             unexpand
-'[['                       csplit          fstrim              i2cdump     makewhatis         ping               sha224sum           uniq
- acpi                      ctrlaltdel      fstype              i2cget      man                pipe_progress      sha256sum           unix2dos
- add-trusted-certificate   curl            fsync               i2cset      mandoc             pivot_root         sha384sum           unlink
- addpart                   curl-config     ftpd                i386        mcookie            pkill              sha3sum             unlzma
- apropos                   cut             ftpget              iconv       md5sum             pmap               sha512sum           unlzop
- ar                        date            ftpput              id          mix                popmaildir         showfigfonts        unpackbootimg
- arch                      dc              funzip              idle        mk_cmds            pr                 shred               unshare
- arp                       dd              fuser               idle3       mkbootimg          print              shuf                unxz
- arping                    debugfs         g                   idle3.8     mkdir              printenv           sleep               unzip
- ascii                     delpart         garc                ifconfig    mkdosfs            printf             smemcap             unzipsfx
- ash                       demandoc        garca               infocmp     mke2fs             prlimit            sntp                unzstd
- awk                       depmod          gawk                infotocap   mkfifo             ps                 soelim              updatedb
- b2sum                     dialog          gawk-5.0.1          inotifyd    mkfs               pscan              softlimit           uptime
- badblocks                 diff            gbash               insmod      mkfs.bfs           pstree             sort                usleep
- base                      dir             gclone              install     mkfs.cramfs        ptx                split               uudecode
- base32                    dircolors       gdbm_dump           ionice      mkfs.ext2          push               sqlite3             uuencode
- base64                    dirname         gdbm_load           iorenice    mkfs.ext3          pv                 start-stop-daemon   uuidgen
- basename                  dmesg           gdbmtool            iostat      mkfs.ext4          pwcat              stat                vconfig
- basenc                    dnsdomainname   gdload              iotop       mkfs.minix         pwd                stdbuf              vdir
- bash                      dos2unix        gearboot            ip          mkfs.vfat          pwdx               strftime            vi
- bashbox                   du              gearboot.enc        ipaddr      mklost+found       pydoc              strings             vmstat
- bashbug                   dumpe2fs        gearhost            ipcalc      mknod              pydoc3             stty                watch
- bbconfig                  e2freefrag      gearhost.enc        iplink      mkpasswd           pydoc3.8           sudo                wc
- bc                        e2fsck          gearinit            ipneigh     mkrecovery         python             sum                 wdctl
- blkdiscard                e2image         gearinit.enc        iproute     mkrecovery.enc     python-config      sv                  wget
- blkid                     e2label         gearlock            iprule      mkrecovery.multi   python3            svlogd              whatis
- blkzone                   e2mmpstatus     gearlock-cli        iptunnel    mkswap             python3-config     swaplabel           whereis
- blockdev                  e2scrub         gearlock-cli.enc    isosize     mktemp             python3.8          swapoff             which
- brctl                     e2scrub_all     gearlock-post       join        modinfo            python3.8-config   swapon              whiptail
- bunzip2                   e2undo          gearlock-post.enc   kill        moon-buggy         rdate              switch_root         whoami
- busybox                   e4crypt         gearlock.enc        killall     more               readahead          sync                whois
- bzcat                     echo            gearprop            killall5    mount              readlink           sysctl              wipefs
- bzcmp                     ed              gearprop-helper     ldattach    mountpoint         readprofile        tabs                xargs
- bzdiff                    egrep           gearprop.enc        less        mpstat             realpath           tac                 xxd
- bzgrep                    env             gearrec             lessecho    mv                 reboot             tail                xz
- bzip2                     envdir          gearrec.enc         lesskey     mypid              reformime          tar                 xzcat
- bzip2recover              expand          gecca               link        namei              remountfs          taskset             xzcmp
- bzless                    expr            geco                linux32     nano               remountfs.enc      tc                  xzdec
- bzmore                    factor          gecpc               linux64     nc                 rename             tcpsvd              xzdiff
- c_rehash                  fallocate       getconf             ln          ncursesw6-config   renice             tee                 xzegrep
- cal                       false           getopt              loadfont    neofetch           reset              telnet              xzfgrep
- captoinfo                 fdflags         gfe                 locate      netcat             resize             telnetd             xzgrep
- cat                       fdisk           gfe.enc             logger      netstat            resize2fs          test                xzless
- catv                      fetch           gink                login       nice               resizepart         tftp                xzmore
- chattr                    fetch.enc       gkillapp            logname     nl                 rev                tftpd               yes
- chcon                     fetch.in        gkillapp.enc        logsave     nmeter             rfkill             tic                 zcat
- chcpu                     fetch.in.enc    grcat               look        nohup              rm                 time                zcmp
- chgrp                     fgconsole       grep                losetup     nout               rmdir              timeout             zdiff
- chkfont                   fgrep           groups              ls          nproc              rmmod              toe                 zegrep
- chmod                     figlet          gsdir               lsattr      nsenter            rmt                top                 zfgrep
- choom                     figlist         gsdir.enc           lscpu       nsnake             rnano              touch               zforce
- chown                     file            gslr                lsipc       numfmt             route              toybox              zgrep
- chpst                     filefrag        gslr.enc            lsmod       od                 rsync              tput                zip
- chroot                    fincore         gstatus             lsof        oneit              rtcwake            tr                  zipcloak
- chrt                      find            gstatus.enc         lspci       openssl            run-parts          traceroute          zipgrep
- chvt                      findfs          gsudo               lsscsi      openvt             runcon             tree                zipinfo
- ckdirex                   finfo           gsudo.enc           lsusb       pacman             runsv              true                zipnote
- cksum                     fixextfs        gunzip              lzcat       pacmanedit         runsvdir           truefalse           zipsplit
- clear                     fixextfs.enc    gxpm                lzcmp       parted             rx                 truncate            zless
- cmp                       fixscreen       gxpm.enc            lzdiff      partx              script             tset                zmore
- col                       fixscreen.enc   gzexe               lzegrep     passwd             scriptlive         tsort               znew
- colcrt                    flock           gzip                lzfgrep     paste              scriptreplay       tty                 zramctl
- colrm                     fmt             halt                lzgrep      patch              sed                ttysize             zstd
- column                    fold            hardlink            lzip        patchelf           sendmail           tunctl              zstdcat
- comm                      frcode          hd                  lzless      pathchk            seq                tune2fs             zstdgrep
- compile_et                free            head                lzma        pcre-config        setarch            udpsvd              zstdless
- coreutils                 fsck            help                lzmadec     pcre2-config       setfont            ul                  zstdmt
- count                     fsck.cramfs     hexdump             lzmainfo    pcre2grep          setpgid            ulimit
+['@                        chroot@          envdir@        gearlock-cli*      ipcalc@        mcedit@             partx*              rfkill@              sync@            usleep@
+'[['@                       chrt*            expand@        gearlock-post*     iplink@        mcookie*            passwd@             rm@                  sysctl@          uudecode@
+ 2to3@                      chvt@            expr@          gearprop*          ipneigh@       mcview@             paste@              rmdir@               tabs*            uuencode@
+ 2to3-3.8*                  ckdirex*         factor@        gearprop-helper*   iproute@       md5sum@             patch@              rmmod@               tac@             uuidgen@
+ 7z*                        cksum@           fallocate*     gearrec*           iprule@        mix@                patchelf*           rmt*                 tail@            vconfig@
+ 7za@                       clear*           false@         gecca*             iptunnel@      mkbootimg*          pathchk@            rnano@               tar*             vdir@
+ acpi@                      cmp@             fdisk@         geco*              isosize*       mk_cmds*            pcre2-config*       route@               taskset*         vi@
+ addpart*                   col*             fetch*         gecpc*             join@          mkdir@              pcre2grep*          rsync*               tc@              vmstat@
+ add-trusted-certificate*   colcrt*          fetch.in*      getconf@           kill@          mkdosfs@            pcre2test*          rtcwake*             tcpsvd@          watch@
+ apropos@                   colrm*           fgconsole@     getopt*            killall@       mke2fs*             pcre-config*        runcon@              tee@             wc@
+ ar@                        column*          fgrep*         gfe*               killall5@      mkfifo@             pcregrep*           run-parts@           telnet@          wdctl*
+ arch@                      comm@            figlet*        gink*              ldattach*      mkfs*               pcretest*           runsv@               telnetd@         wget*
+ arp@                       compile_et*      figlist*       gkillapp*          less*          mkfs.bfs*           pgrep@              runsvdir@            test@            whatis@
+ arping@                    coreutils*       file*          grcat*             lessecho*      mkfs.cramfs*        pidof@              rx@                  tftp@            whereis*
+ ascii@                     count@           filefrag*      grep*              lesskey*       mkfs.ext2@          ping@               script*              tftpd@           which@
+ ash@                       cp@              fincore*       groups@            link@          mkfs.ext3@          pipe_progress@      scriptlive*          tic*             whiptail@
+ awk@                       cpio*            find*          gsdir*             linux32@       mkfs.ext4@          pivot_root@         scriptreplay*        time@            whoami@
+ axel*                      crc32@           findfs*        gslr*              linux64@       mkfs.minix*         pkill@              sed*                 timeout@         whois@
+ b2sum@                     c_rehash*        fixfs*         gstatus*           ln@            mkfs.vfat@          pmap@               sendmail@            toe*             wipefs*
+ badblocks*                 crond@           fixscreen*     gsudo*             loadfont@      mklost+found*       popmaildir@         seq@                 top@             xargs*
+ base32@                    crontab@         flock*         gunzip*            locate*        mknod@              pr@                 setarch*             touch@           xxd@
+ base64@                    csplit@          fmt@           gxpm*              logger@        mkpasswd@           printenv@           setfont@             toybox*          xz*
+ basename@                  ctrlaltdel*      fold@          gzexe*             logname@       mkrecovery*         printf@             setsid*              tput*            xzcat@
+ basenc@                    curl*            frcode*        gzip*              logsave*       mkswap*             prlimit*            setterm*             tr@              xzcmp@
+ bash*                      curl-config*     free@          halt@              look*          mktemp@             ps@                 setuidgid@           traceroute@      xzdec*
+ bashbug*                   cut@             fsck*          hardlink*          losetup*       modinfo@            pscan@              sh@                  tree*            xzdiff*
+ bbconfig@                  date@            fsck.cramfs*   hd@                ls@            moon-buggy*         pstree@             sha1sum@             true@            xzegrep@
+ bc@                        dc@              fsck.ext2@     head@              lsattr*        more*               ptx@                sha224sum@           truncate@        xzfgrep@
+ blkdiscard*                dd@              fsck.ext3@     help@              lscpu*         mount@              pv*                 sha256sum@           tset*            xzgrep*
+ blkid*                     debugfs*         fsck.ext4@     hexdump*           lsipc*         mountpoint@         pwcat*              sha384sum@           tsort@           xzless*
+ blkzone*                   delpart*         fsck.minix*    hexedit@           lsmod@         mpstat@             pwd@                sha3sum@             tty@             xzmore*
+ blockdev*                  demandoc*        fsfreeze*      hostname@          lsof*          mv@                 pwdx@               sha512sum@           ttyecho*         yes@
+ brctl@                     depmod@          fstrim@        httpd@             lspci@         namei*              pydoc@              showfigfonts*        ttysize@         zcat*
+ bunzip2@                   dialog*          fstype@        hwclock*           lsscsi@        nano*               pydoc3@             shred@               tunctl@          zcmp*
+ busybox*                   diff@            fsync@         i2cdetect@         lsusb@         nc@                 pydoc3.8*           shuf@                tune2fs*         zdiff*
+ bzcat@                     dir@             ftpd@          i2cdump@           lzcat@         ncursesw6-config*   python@             sleep@               udpsvd@          zegrep*
+ bzcmp@                     dircolors@       ftpget@        i2cget@            lzcmp@         neofetch*           python3@            smemcap@             ul*              zfgrep*
+ bzdiff*                    dirname@         ftpput@        i2cset@            lzdiff@        netcat@             python3.8*          sntp@                ulimit@          zforce*
+ bzgrep*                    dmesg*           funzip*        i386@              lzegrep@       netstat@            python3.8-config*   soelim*              umount@          zgrep*
+ bzip2*                     dnsdomainname@   fuser@         iconv*             lzfgrep@       nice@               python3-config@     softlimit@           uname@           zip*
+ bzip2recover*              dos2unix@        g@             id@                lzgrep@        ninvaders*          python-config@      sort@                uname26@         zipcloak*
+ bzless@                    du@              garc*          idle@              lzip*          nl@                 rdate@              split@               uncompress*      zipgrep*
+ bzmore*                    dumpe2fs*        garca@         idle3@             lzless@        nmeter@             readahead@          sqlite3*             unexpand@        zipinfo@
+ cal*                       e2freefrag*      gawk*          idle3.8*           lzma@          nohup@              readlink@           start-stop-daemon@   uniq@            zipnote*
+ captoinfo@                 e2fsck*          gawk-5.0.1*    ifconfig@          lzmadec*       nout*               readprofile*        stat@                unix2dos@        zipsplit*
+ cat@                       e2image*         gbash@         infocmp*           lzmainfo*      nproc@              realpath@           stdbuf@              unlink@          zless*
+ catv@                      e2label@         gclone*        infotocap@         lzmore@        nsenter*            reboot@             strings@             unlzma@          zmore*
+ chattr*                    e2mmpstatus@     gdbm_dump*     inotifyd@          lzop@          nsnake*             reformime@          stty@                unlzop@          znew*
+ chcon@                     e2scrub*         gdbm_load*     insmod@            lzopcat@       numfmt@             remount_android*    sudo*                unpackbootimg*   zramctl*
+ chcpu*                     e2scrub_all*     gdbmtool*      install@           make_ext4fs*   od@                 rename*             sum@                 unshare*         zstd*
+ chgrp@                     e2undo*          gdload*        ionice*            makemime@      oneit@              renice*             sv@                  unxz@            zstdcat@
+ chkfont*                   e4crypt*         gearboot*      iorenice@          makewhatis@    openssl*            reset@              svlogd@              unzip*           zstdgrep*
+ chmod@                     echo@            geardump*      iostat@            man@           openvt@             resize@             swaplabel*           unzipsfx*        zstdless*
+ choom*                     ed@              gearhost*      iotop@             mandoc*        pacman*             resize2fs*          swapoff@             unzstd@          zstdmt@
+ chown@                     egrep*           gearinit*      ip@                mc*            pacmanedit*         resizepart*         swapon@              updatedb*
+ chpst@                     env@             gearlock*      ipaddr@            mcdiff@        parted*             rev*                switch_root@         uptime@
 ```
 
 **Protip:** Run `bash` in terminal and feel the real power ;) Say goodbye to `sh` !
