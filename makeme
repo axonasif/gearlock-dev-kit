@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+ 
+_execDir="$(dirname "$(readlink -f "$0")")"
+_assets_dir="$_execDir/assets"
+_templates_dir="$_assets_dir/templates"
+_src_dir="$_execDir/src"
+_target_dir="$_execDir/target"
+
+mkdir -p "$_target_dir" || exit
+
+# Embed garca
+cp "$_src_dir/gdk" "$_target_dir/gdk"
+gzip -c "$_assets_dir/garca" >> "$_target_dir/gdk"
+
+test $? != 0 && exit 1
+
+# Embed templates
+i=0
+for template in core mesa kernel; do
+	cd "$_templates_dir/$template"
+	sed -f - "$_target_dir/$(test "$i" -gt 0 && echo ".gdk.tmp$i" || echo 'gdk')" << EOF > "$_target_dir/.gdk.tmp$((i+1))"
+	s|~~~${template^^}_TEMPLATE_ENCODED~~~|$(tar -cpz . | base64 | tr -d '\n')|
+EOF
+	test $? != 0 && exit 1
+	((i++))
+done
+
+mv "$_target_dir/.gdk.tmp$i" "$_target_dir/gdk"
+rm -f "$_target_dir/.gdk.tmp"*
+chmod +x "$_target_dir/gdk"

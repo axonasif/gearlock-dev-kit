@@ -1,0 +1,1127 @@
+#!/usr/bin/env bash
+
+#####################
+### Public functions
+#####################
+println::info() {
+	test "$_arg_quiet" == "off" && echo -e "[%%%] ${WHITE}info${RC}: $@"
+}
+
+println::warn() {
+	test "$_arg_quiet" == "off" && echo -e "[***] ${YELLOW}warn${RC}: $@"
+}
+
+println::error() {
+	local _ret="${2:-$?}"
+	test "${_PRINT_HELP:-no}" == yes && print_help >&2
+	echo -e "[!!!] ${BRED}error${RC}[$_ret]: $1" >&2
+	exit "${_ret}"
+}
+
+println::helpgen() {
+	# THE DEFAULTS INITIALIZATION - POSITIONALS
+	_positionals=()
+	_arg_helpname=
+	# THE DEFAULTS INITIALIZATION - OPTIONALS
+	_arg_short_desc=
+	_arg_usage=
+	_arg_options_desc=
+	_arg_subcommands=
+	_arg_examples=
+	_arg_footer_msg=
+
+
+	print_help()
+	{
+		printf '%s\n' "<The general help message of my script>"
+		printf 'Usage: %s [--short-desc <arg>] [--usage <arg>] [--options-desc <arg>] [--subcommands <arg>] [--examples <arg>] [--footer-msg <arg>] [-h|--help] <helpname>\n' "$0"
+		printf '\t%s\n' "-h, --help: Prints help"
+	}
+
+
+	parse_commandline()
+	{
+		_positionals_count=0
+		while test $# -gt 0
+		do
+			_key="$1"
+			case "$_key" in
+				--short-desc)
+					test $# -lt 2 && println::error "Missing value for the optional argument '$_key'." 1
+					_arg_short_desc="$2"
+					shift
+					;;
+				--short-desc=*)
+					_arg_short_desc="${_key##--short-desc=}"
+					;;
+				--usage)
+					test $# -lt 2 && println::error "Missing value for the optional argument '$_key'." 1
+					_arg_usage="$2"
+					shift
+					;;
+				--usage=*)
+					_arg_usage="${_key##--usage=}"
+					;;
+				--options-desc)
+					test $# -lt 2 && println::error "Missing value for the optional argument '$_key'." 1
+					_arg_options_desc="$2"
+					shift
+					;;
+				--options-desc=*)
+					_arg_options_desc="${_key##--options-desc=}"
+					;;
+				--subcommands)
+					test $# -lt 2 && println::error "Missing value for the optional argument '$_key'." 1
+					_arg_subcommands="$2"
+					shift
+					;;
+				--subcommands=*)
+					_arg_subcommands="${_key##--subcommands=}"
+					;;
+				--examples)
+					test $# -lt 2 && println::error "Missing value for the optional argument '$_key'." 1
+					_arg_examples="$2"
+					shift
+					;;
+				--examples=*)
+					_arg_examples="${_key##--examples=}"
+					;;
+				--footer-msg)
+					test $# -lt 2 && println::error "Missing value for the optional argument '$_key'." 1
+					_arg_footer_msg="$2"
+					shift
+					;;
+				--footer-msg=*)
+					_arg_footer_msg="${_key##--footer-msg=}"
+					;;
+				-h|--help)
+					print_help
+					exit 0
+					;;
+				-h*)
+					print_help
+					exit 0
+					;;
+				*)
+					_last_positional="$1"
+					_positionals+=("$_last_positional")
+					_positionals_count=$((_positionals_count + 1))
+					;;
+			esac
+			shift
+		done
+	}
+
+
+	handle_passed_args_count()
+	{
+		local _required_args_string="'helpname'"
+		test "${_positionals_count}" -ge 1 || _PRINT_HELP=yes println::error "FATAL ERROR: Not enough positional arguments - we require exactly 1 (namely: $_required_args_string), but got only ${_positionals_count}." 1
+		test "${_positionals_count}" -le 1 || _PRINT_HELP=yes println::error "FATAL ERROR: There were spurious positional arguments --- we expect exactly 1 (namely: $_required_args_string), but got ${_positionals_count} (the last one was: '${_last_positional}')." 1
+	}
+
+
+	assign_positional_args()
+	{
+		local _positional_name _shift_for=$1
+		_positional_names="_arg_helpname "
+
+		shift "$_shift_for"
+		for _positional_name in ${_positional_names}
+		do
+			test $# -gt 0 || break
+			eval "$_positional_name=\${1}" || println::error "Error during argument parsing." 1
+			shift
+		done
+	}
+
+	parse_commandline "$@"
+	handle_passed_args_count
+	assign_positional_args 1 "${_positionals[@]}"
+	
+	# Title block
+	## TEXT child
+	echo -e "${_arg_helpname}\c"
+	if test -n "$_arg_short_desc"; then
+		echo -e " - $_arg_short_desc\n"
+	else
+		echo # Newline space
+	fi
+
+	# Body block
+	## USAGE child
+	if test -n "$_arg_usage"; then
+		echo -e "USAGE:"
+		while read -r line; do
+			echo -e "    $line"
+		done < <(echo "$_arg_usage")
+		echo # Newline space
+	fi
+
+	## OPTIONS+SUBCOMMANDS child
+	### Column implementaion in bash without coreutils-column
+	for child in "$_arg_options_desc" "$_arg_subcommands"; do
+		if test -n "$child"; then
+			local _startString _endString gapVar;
+			_startString="$(sed 's|<^>.*||g' <<<"${child}")"
+			_endString="$(sed 's|.*<^>||g' <<<"${child}")"
+			mapfile -t _startString < <(echo "$_startString")
+			mapfile -t _endString < <(echo "$_endString")
+			
+			local i=0
+			test -z "$firstChild" && echo -e "OPTIONS:" \
+				|| echo -e 'SUBCOMMANDS:'
+			firstChild=true
+			
+			for line in "${_startString[@]}"; do
+				gapVar="$(
+					for t in $(seq $((30 - ${#line})) ); do
+						echo -n " "
+					done
+				)"
+				echo -e "    $line${gapVar}${_endString[$i]}"
+				((i++))
+			done
+			echo
+		fi
+	done
+
+	## EXAMPLES child
+	if test -n "$_arg_examples"; then
+		echo -e "EXAMPLES:"
+		while read -r line; do
+			echo -e "    $line"
+		done < <(echo "$_arg_examples")
+		echo # Newline space
+	fi
+
+	# Footer block
+	## TEXT child
+	if test -n "$_arg_footer_msg"; then
+		echo -e "$_arg_footer_msg\n"
+	fi
+
+	
+}
+
+install::garca() {
+	local num
+	local install_as
+	install_as="$1"
+	num=$(grep -an '# GARCA'_'EMBEDED' "$0" | head -n1 | cut -d ':' -f1) && ((num++))
+	tail -n +$num "$0" | gzip -c -d > "$install_as" && chmod 755 "$install_as" || return
+}
+
+ensure::garca() {
+	command -v garca 1>/dev/null \
+		|| { println::error "garca not found, please run \`${_self} install\` first" 1; }
+}
+
+geco() {
+	echo -e "$@"
+}
+
+metadata::fetch_value() {
+	local key
+	local stream
+	
+	key="$1"
+	stream="$2"
+	
+	
+	# If stdin
+	if test -z "$stream"; then
+		# If zygote_file is defined
+		if test -n "$_zygote_file"; then
+			stream="$(< "$_zygote_file")"
+		else
+			read stdin
+			test -n "$stdin" && stream="$stdin" || return 1
+		fi
+	# If stream is a file
+	elif test -f "$stream"; then
+		stream="$(< "$stream")" || return 1
+	fi
+	
+	# Ensure the stream is valid
+	test -z "$stream" && return 1
+	
+	head -n1 < <(grep "$key=\".*\"" <<<"$stream") \
+		| cut -d '"' -f2
+}
+
+metadata::set_value() {
+	local key
+	local value
+	local stream
+	
+	key="$1"
+	value="$2"
+	stream="${3:-"$_zygote_file"}"
+	
+	
+	# If the key NAME exists
+	if grep -q "${key}=\".*\"" "$stream"; then
+		sed -i "s|${key}=\".*\"|${key}=\"${value}\"|g" "$stream"
+	# And when not --- obviously
+	else
+		echo "${key}=${value}" >> "$stream"
+	fi
+}
+
+begins_with_short_option() {
+	local first_option all_short_options='h'
+	first_option="${1:0:1}"
+	test "$all_short_options" = "${all_short_options/$first_option/}" && return 1 || return 0
+}
+
+
+#####################
+### Private functions
+#####################
+function private.new()
+{
+	# THE DEFAULTS INITIALIZATION - POSITIONALS
+	_positionals=()
+	_arg_path=
+	# THE DEFAULTS INITIALIZATION - OPTIONALS
+	_arg_codename=
+	_arg_template=
+
+
+	print_help()
+	{
+# 		printf '%s\n' "<The general help message of my script>"
+# 		printf 'Usage: %s [--codename <arg>] [--template <arg>] [-h|--help] <path>\n' "$0"
+# 		printf '\t%s\n' "-h, --help: Prints help"
+
+		println::helpgen GDK-NEW \
+			--short-desc "\
+${SUBCOMMANDS_DESC[1]}\
+" \
+	\
+			--usage "\
+${_self} [OPTIONAL-OPTIONS] <path>\
+" \
+	\
+			--options-desc "\
+-c, --codename<^>Avoid directory-as-codename
+-t, --template<^>core, mesa, kernel templates
+-h, --help<^>Prints this help information\
+" \
+	\
+			--examples "\
+### The basic way:
+${YELLOW}${_self} new awesome_project${RC}
+
+### Pre-setting project codename, avoiding directory-path as codename:
+${YELLOW}${_self} new --codename cake awesome_project${RC}
+
+### Using a specific template for project initialization(core is default):
+${YELLOW}${_self} new --template kernel awesome_project${RC}
+
+### Random usage EXAMPLES just for referrence:
+${YELLOW}${_self} new --template mesa graphics_lib
+${_self} new --template=kernel vanilla_kernel --codename vkernel
+${_self} new --codename=cakebaker foo/bakery${RC}\
+"
+
+	}
+
+
+	parse_commandline()
+	{
+		_positionals_count=0
+		while test $# -gt 0
+		do
+			_key="$1"
+			case "$_key" in
+				--codename|-c)
+					test $# -lt 2 && println::error "Missing value for the optional argument '$_key'." 1
+					_arg_codename="$2"
+					shift
+					;;
+				--codename=*)
+					_arg_codename="${_key##--codename=}"
+					;;
+				--template|-t)
+					test $# -lt 2 && println::error "Missing value for the optional argument '$_key'." 1
+					_arg_template="$2"
+					shift
+					;;
+				--template=*)
+					_arg_template="${_key##--template=}"
+					;;
+				-h|--help)
+					print_help
+					exit 0
+					;;
+				-h*)
+					print_help
+					exit 0
+					;;
+				*)
+					_last_positional="$1"
+					_positionals+=("$_last_positional")
+					_positionals_count=$((_positionals_count + 1))
+					;;
+			esac
+			shift
+		done
+	}
+
+
+	handle_passed_args_count()
+	{
+		local _required_args_string="'path'"
+		test "${_positionals_count}" -ge 1 || _PRINT_HELP=yes println::error "FATAL ERROR: Not enough positional arguments - we require exactly 1 (namely: $_required_args_string), but got only ${_positionals_count}." 1
+		test "${_positionals_count}" -le 1 || _PRINT_HELP=yes println::error "FATAL ERROR: There were spurious positional arguments --- we expect exactly 1 (namely: $_required_args_string), but got ${_positionals_count} (the last one was: '${_last_positional}')." 1
+	}
+
+
+	assign_positional_args()
+	{
+		local _positional_name _shift_for=$1
+		_positional_names="_arg_path "
+
+		shift "$_shift_for"
+		for _positional_name in ${_positional_names}
+		do
+			test $# -gt 0 || break
+			eval "$_positional_name=\${1}" || println::error "Error during argument parsing." 1
+			shift
+		done
+	}
+
+	parse_commandline "$@"
+	handle_passed_args_count
+	assign_positional_args 1 "${_positionals[@]}"
+
+# # 	: "${_arg_directory:="$PWD"}"
+# # 	test ! -e "$_arg_directory" && println::error "$_arg_directory directory does not exist" 1
+	
+# # 	## When no codename is specified
+# # 	if test -z "$_arg_codename"; then
+# # 		gen_names="$(find "$_arg_directory" -maxdepth 1 -mindepth 1 -type d -name "awesome_project*" 2>/dev/null | wc -l)"
+# # 		test "$gen_names" -gt 0 && : "${_arg_codename:="awesome_project$((gen_names + 1))"}" \
+# # 			|| : "${_arg_codename:="awesome_project"}"
+# # 	fi
+	_path_codename="${_arg_path##*/}"
+	## When no codename || template is specified
+	: "${_arg_codename:="$_path_codename"}"
+	: "${_arg_template:="core"}"
+	_arg_codename="$(tr -d '[:space:]' <<<"${_arg_codename,,}")" # Make lowercase and trim whitespaces
+
+	## When the codename dir already exists
+	if test -e "$_arg_path"; then
+		println::error "Destination \`$_arg_path\` already exists.\n\t  You may either remove that project dir or use a different path for setup." 1
+	fi
+
+	## Check if the $_arg_template is valid
+	! echo "$_arg_template" | grep -E 'core|mesa|kernel' 1>/dev/null && {
+		println::error "$_arg_template is not a valid template.\n\t  core, kernel and mesa are the valid ones, so try again." 1
+	}
+
+	## Finally setup the template as per inputs
+	println::info "Setting up project at \`$_arg_path\`"
+	mkdir -p "$_arg_path" || println::error "Failed to initialize the project directory"
+
+	println::info "Using $_arg_template template"
+	case "$_arg_template" in
+		core)
+			echo '~~~CORE_TEMPLATE_ENCODED~~~'
+			;;
+		mesa)
+			echo '~~~MESA_TEMPLATE_ENCODED~~~'
+			;;
+		kernel)
+			echo '~~~KERNEL_TEMPLATE_ENCODED~~~'
+			;;
+	esac | base64 -d | tar -C "$_arg_path" -xpzf - || println::error "Failed to extract $_arg_template template"
+	find "$_arg_path" -type f -name '.keep' -exec rm {} \; || println::error "Failed to cleanup .keep files"
+
+# 	rsync -a --exclude='.git' --exclude='.keep' "$TEMPLATES_DIR/$_arg_template/" "$PROJECTS_DIR/$_arg_codename" || exit
+
+	println::info "Resetting CODENAME metadata to $_arg_codename on !zygote.sh"
+	sed -i "s|\bCODENAME=\".*\"|CODENAME=\"$_arg_codename\"|g" "$_arg_path/"'!zygote.sh' \
+		|| println::error 'Failed to reset CODENAME metadata on !zygote.sh'
+
+	println::info "Initializing git version control for your project"
+	if command -v git 1>/dev/null; then
+		git init "$_arg_path" 1>/dev/null || println::error "Failed to initialize git at \`$_arg_path\`"
+	else
+		println::error "git does not seem to be available" 1
+	fi
+}
+
+function private.build()
+{
+
+	ensure::garca
+	
+	# THE DEFAULTS INITIALIZATION - POSITIONALS
+	_positionals=()
+	_arg_path=
+	# THE DEFAULTS INITIALIZATION - OPTIONALS
+	_arg_output_directory=
+	_arg_compress_level=
+	_arg_compress_method=
+	_arg_wizard="off"
+
+
+	print_help()
+	{
+		println::helpgen GDK-BUILD \
+			--short-desc "\
+${SUBCOMMANDS_DESC[2]}\
+" \
+	\
+			--usage "\
+${_self} [OPTIONAL-OPTIONS] <path>\
+" \
+	\
+			--options-desc "\
+-d, --output-directory<^>Custom build directory
+-l, --compress-level<^>Custom compression level
+-m, --compress-method<^>Custom compression method
+-w, --wizard<^>Wizard for metadata re--initialization
+-h, --help<^>Prints this help information\
+" \
+	\
+			--examples "\
+### The basic way:
+${YELLOW}${_self} build${RC} # Builds the project in your current directory
+
+### Build project from a specified directory:
+${YELLOW}${_self} build /home/me/awesome_project${RC}
+
+### Use wizard mode for metadata re--initialization
+${YELLOW}${_self} build -w${RC}
+
+### Random usage EXAMPLES just for referrence:
+${YELLOW}${_self} build --wizard --compress-level=15
+${_self} build -d \"$HOME/Downloads\" --wizard /projects/awesome_project
+${_self} build /projects/awesome_project --wizard --output-directory \"$HOME/Downloads\" --compress-method=lzma2 -l 13${RC}\
+"
+
+	}
+
+
+	parse_commandline()
+	{
+		_positionals_count=0
+		while test $# -gt 0
+		do
+			_key="$1"
+			case "$_key" in
+				--output-directory|-d)
+					test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+					_arg_output_directory="$2"
+					shift
+					;;
+				--output-directory=*)
+					_arg_output_directory="${_key##--output-directory=}"
+					;;
+				--compress-level)
+					test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+					_arg_compress_level="$2"
+					shift
+					;;
+				--compress-level=*)
+					_arg_compress_level="${_key##--compress-level=}"
+					;;
+				--compress-method|-m)
+					test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+					_arg_compress_method="$2"
+					shift
+					;;
+				--compress-method=*)
+					_arg_compress_method="${_key##--compress-method=}"
+					;;
+				--no-wizard|--wizard|-w)
+					_arg_wizard="on"
+					test "${1:0:5}" = "--no-" && _arg_wizard="off"
+					;;
+				-h|--help)
+					print_help
+					exit 0
+					;;
+				-h*)
+					print_help
+					exit 0
+					;;
+				*)
+					_last_positional="$1"
+					_positionals+=("$_last_positional")
+					_positionals_count=$((_positionals_count + 1))
+					;;
+			esac
+			shift
+		done
+	}
+
+
+	handle_passed_args_count()
+	{
+		local _required_args_string="'path'"
+		test "${_positionals_count}" -ge 1 || _PRINT_HELP=yes die "FATAL ERROR: Not enough positional arguments - we require exactly 1 (namely: $_required_args_string), but got only ${_positionals_count}." 1
+		test "${_positionals_count}" -le 1 || _PRINT_HELP=yes die "FATAL ERROR: There were spurious positional arguments --- we expect exactly 1 (namely: $_required_args_string), but got ${_positionals_count} (the last one was: '${_last_positional}')." 1
+	}
+
+
+	assign_positional_args()
+	{
+		local _positional_name _shift_for=$1
+		_positional_names="_arg_path "
+
+		shift "$_shift_for"
+		for _positional_name in ${_positional_names}
+		do
+			test $# -gt 0 || break
+			eval "$_positional_name=\${1}" || die "Error during argument parsing." 1
+			shift
+		done
+	}
+
+	parse_commandline "$@"
+	# handle_passed_args_count
+	assign_positional_args 1 "${_positionals[@]}"
+	: "${_arg_path:="$PWD"}"
+
+	# Define Vars
+	CompRatio="-mx=${_arg_compression_level:-10}"
+	CompMethod="-m0=${_arg_compression_method:-zstd}"
+	_zygote_file="$_arg_path"/'!zygote.sh'
+	if test -e "$_zygote_file"; then
+		WORKDIR="$(readlink -f "$_arg_path")"
+	else
+		println::error "$_arg_path is not a valid gxp project" 1
+	fi
+	: ${_arg_output_directory:="$WORKDIR"/'!target'}
+
+	
+	set_type(){
+		test -f "$WORKDIR/$GCOMM/extension.sh" && TTYPE="Extension"
+		metadata::set_value TYPE "${TTYPE:="Package"}"
+	}
+
+	# Build process functions
+	build_gxp() {
+		ensure::garca
+		
+		# Fetch and print metadata names
+		println::info "Fetching and printing metadata values"
+		while read metadata_name; do
+			eval "$metadata_name=\"$(metadata::fetch_value $metadata_name)\""
+			test "$_arg_quiet" == off && echo -e "$metadata_name: $(eval "echo \$$metadata_name")"
+		done < <(grep '.*=\".*\"' "$_zygote_file" | cut -d '=' -f1)
+		
+		# Generate attributes
+		println::info "Generating arttributes"
+		local zD="$WORKDIR"/'.!zygote'
+		local fM="$zD/mode" sP="$zD/.sParent"
+		local sT="$zD/.sTarget" sL="$zD/link"
+		mkdir -p "${zD:="$WORKDIR"/'.!zygote'}"
+		if [ -n "$(find "$WORKDIR" -type l ! -name '!target' -exec realpath {} + | grep -v '.git' | sed "s|$WORKDIR/||" | awk '{print "\""$0"\""}')" ]; then
+			find "$WORKDIR" -type l ! -name '!target' -exec realpath {} + | grep -v '.git' | sed "s|$WORKDIR/||g" | awk '{print "\""$0"\""}' | sed 's|\"/|\"|g' > "${sP}"
+			find "$WORKDIR" -type l ! -name '!target' -printf '"%p"\n' | grep -v '.git' | sed "s|$WORKDIR/||g" | sed 's|\"/|\"|g' > "${sT}"
+			paste -d " " "$sP" "$sT" > "$sL" && rm -f "$sP" "$sT"
+		else
+			rm -f "$sL"
+		fi
+		find "$WORKDIR" ! -name '!target' -printf '%#m "%p"\n' | grep -v '.git' | sed -e "s|$WORKDIR/||" -e "s|.*$WORKDIR.*||" | awk 'NF' > "${fM}"
+		
+		# Final build process
+		local _output_name="${CODENAME}_${VERSION}_${AUTHOR}.gxp"
+		println::info "Building $CODENAME $TTYPE"
+		_final_build_func(){
+			garca a '-x!readme.txt' '-x!!target' '-x!.git' ${CompMethod} ${CompRatio} $@ \
+				"$_arg_output_directory/$_output_name" "$WORKDIR"/* "$WORKDIR"/'.!zygote' && \
+			{
+				println::info "$CODENAME $TTYPE built and can be found at $(test "${_arg_output_directory%\/\!target}" == "$PWD" && echo "${_arg_output_directory##*/}" || echo "$_arg_output_directory")"
+# 				test -n "$GEARLOCK_VER" && geco "You can test it through ${YELLOW}GXPM${RC} right now"
+				chmod -f 777 "$_arg_output_directory/$_output_name" 2>/dev/null
+			}
+		}
+		if test "$_arg_quiet" == off; then
+			_final_build_func || println::error "Something went wrong while packing up $CODENAME"
+		elif test "$_arg_quiet" == on; then
+			_final_build_func >/dev/null 2>&1 || println::error "Something went wrong while packing up $CODENAME"
+		fi
+
+	}
+
+	show_help() {
+		geco "
+	GearLock Development Kit
+	\$ Command Line Options: ./${_self} <option> <optional-compMethod> <optional-compRatio>
+
+
+		--nowizard                Does not use wizard mode
+
+		--help, -h                Print this help message
+		
+
+	\$ Available compMethods: bzip2 bcj2 bcj ppc ia64 arm armt sparc swap2 swap4 copy deflate64 deflate delta lzma2 flzma2 lzma zstd(default) lz4
+	\$ Default compRatio level: 10 (Max 23)
+	\$ Note: It is advised not to change the compMethod
+		"
+	}
+
+	wizard_run() {
+	geco "\n++ Try \`./${_self} --help\` to use the command line"
+	geco "\n~ Have you manually configured your ${TTYPE} properties in ${YELLOW}!zygote.sh${RC}?"
+	geco "~ Or do you want to go through the auto wizard?\n"
+	
+	select opt in "I configured it manually" "Go through auto wizard" "Exit"
+	do
+		case "$opt" in
+			"I configured it manually")
+				geco "\nOkay"
+				sleep 1
+				clear
+
+				;;
+			"Go through auto wizard")
+				clear
+
+				# Name
+				read -eri "$(metadata::fetch_value NAME)" -p "$(geco "Enter your $TTYPE ${GREEN}Name${RC} > ")" "TNAME"
+				metadata::set_value NAME "$TNAME" && geco
+
+				# Codename
+				read -eri "$(metadata::fetch_value CODENAME)" -p "$(geco "Enter your $TTYPE ${GREEN}CodeName${RC} (${YELLOW}should be unique, lowercase and no special-chars${RC}) > ")" "TCODENAME"
+				metadata::set_value CODENAME "$(tr -d '[:space:]' <<<"${TCODENAME,,}")" && geco
+
+				# Version
+				read -eri "$(metadata::fetch_value VERSION)" -p "$(geco "Enter your ${GREEN}$TTYPE${RC} version > ")" "TVERSION"
+				metadata::set_value VERSION "$TVERSION" && geco
+
+				# Author
+				read -eri "$(metadata::fetch_value AUTHOR)" -p "$(geco "Enter your ${GREEN}Name${RC} as the owner/dev/author > ")" "TAUTHOR"
+				metadata::set_value AUTHOR "$TAUTHOR" && geco
+
+				# Description
+				read -eri "$(metadata::fetch_value SHORTDESC)" -p "$(geco "Enter a very short ${GREEN}Description${RC} for your $TTYPE > ")" "TSHORTDESC"
+				metadata::set_value SHORTDESC "$TSHORTDESC" && geco
+
+
+				# Reboot Request
+				while true; do
+					geco "\n~ You must require reboot if your ${TTYPE} modifies any major system files which can get it unstable duing runtime, otherwise it should be fine..."
+					read -rp "$(geco "Enable ${RED}Reboot-Request${RC}? [${GREEN}Y${RC}/n]") (Current Value: $(metadata::fetch_value REQREBOOT)) " c
+					case $c in
+						[Yy]* )
+							geco
+							select opt in "Only in android-booted mode" "Only in recovery mode" "Both android-booted + recovery mode"
+							do
+								case "$opt" in
+									"Only in android-booted mode")
+										metadata::set_value REQREBOOT "yes, no"
+										;;
+									"Only in recovery mode")
+										metadata::set_value REQREBOOT "no, yes"
+										;;
+									"Both android-booted + recovery mode")
+										metadata::set_value REQREBOOT "yes, yes"
+										;;
+								esac
+								break
+							done
+							break
+							;;
+						[Nn]* ) metadata::set_value REQREBOOT "no, no" && break ;;
+						* ) geco "\nEnter either ${GREEN}y${RC}es or no" ;;
+					esac
+				done
+
+				# Generate Uninstaller
+				while true; do
+					geco "\n~ ${GREEN}GearLock${RC} can generate an uninstallation script itself for your ${TTYPE}"
+					geco "~ You can even put your custom unins code in ${RED}uninstall.sh${RC} and also use auto uninstallation script by gearlock at the same time..."
+					geco "~ ${GREEN}GearLock${RC} will merge custom uninstallation script as needed...\n"
+					read -rp "$(geco "\nEnable ${RED}Auto-Uninstallation-Script Generation${RC}? [${GREEN}Y${RC}/n]") (Current Value: $(metadata::fetch_value GEN_UNINS)) " c
+					case $c in
+						[Yy]* ) metadata::set_value GEN_UNINS yes && break ;;
+						[Nn]* ) metadata::set_value GEN_UNINS no && break ;;
+						* ) geco "\nEnter either ${GREEN}y${RC}es or no" ;;
+					esac
+				done
+
+				# Interactive mode
+				while true; do
+					geco "\n~ Interactivity is valid if your install/uninstall operation requires inputs from the user ${BGREEN}expect Yes or No${RC}"
+					geco "~ You need to define this in your metadata so that GXPM can know if performing an auto/silent install/uninstall of your $TTYPE is possible"
+					read -rp "$(geco "\nSo, does your $TTYPE require additional interactivity? [${GREEN}Y${RC}/n]") (Current Value: $(metadata::fetch_value INTERACTIVE)) " c
+					case $c in
+						[Yy]* )
+							geco
+							select opt in "Only in install" "Only in uninstall" "Both install + uninstall"
+							do
+								case "$opt" in
+									"Only in install")
+										metadata::set_value INTERACTIVE "yes, no"
+										;;
+									"Only in uninstall")
+										metadata::set_value INTERACTIVE "no, yes"
+										;;
+									"Both install + uninstall")
+										metadata::set_value INTERACTIVE "yes, yes"
+										;;
+								esac
+								break
+							done
+							break
+							;;
+						[Nn]* ) metadata::set_value INTERACTIVE "no, no" && break ;;
+						* ) geco "\nEnter either ${GREEN}y${RC}es or no" ;;
+					esac
+				done
+				;;
+			"Exit")
+				exit 0
+				;;
+		esac
+		break
+	done
+
+	build_gxp
+
+	}
+
+
+	# Run build
+	set_type
+	test "$_arg_wizard" == "on" && wizard_run
+	build_gxp
+	
+# 	if [ -z "$1" ]; then
+# 		set_type
+# 		wizard_run
+# 	else
+# 		case "$1" in
+# 			--nowizard) set_type; build_gxp ;;
+# 			--help|-h) show_help ;;
+# 			*) geco "${_self}: unknown option: $*" && show_help ;;
+# 		esac
+# 	fi
+
+}
+
+
+function private.install()
+{
+# 	# Reset our custom PATH modification
+# 	local PATH
+# 	PATH="$(echo "$PATH" | sed "s|$BD")"
+	# Ensure we're root user
+	test $EUID -ne 0 && {
+		println::error "Please run as root user" 1
+	}
+
+	# Check if GDK is already installed
+	local locate_gdk
+	locate_gdk="$(command -v gdk)" \
+		&& println::warn "gdk($("$locate_gdk" --version)) is installed"
+	
+	# Check if we have /usr/bin within PATH
+	_target_bin_dir="$(
+		if test -n "$(echo "$PATH" | grep "/usr/bin")"; then
+			echo '/usr/bin'
+		else
+			echo "$(echo "$PATH" | head -n1 | cut -d ':' -f1)"
+		fi
+	)"
+	test -z "$_target_bin_dir" && println::error "Failed to locate an usable bin dir" 1
+
+	# Install the programs in PATH
+	println::info "Installing gdk in $_target_bin_dir" && {
+		cp "$_self" "$_target_bin_dir/gdk" && chmod 755 "$_target_bin_dir/gdk" \
+			|| println::error "Failed to install gdk in $_target_bin_dir"
+	}
+	println::info "Installing garca in $_target_bin_dir" && {
+		install::garca "$_target_bin_dir/garca" || println::error "Failed to install garca in $_target_bin_dir"
+	}
+	
+	# Print success message
+	println::info "Now try running \`gdk --help\`"
+}
+
+function private.extract()
+{
+	ensure::garca
+
+	# THE DEFAULTS INITIALIZATION - POSITIONALS
+	_positionals=()
+	_arg_file=
+	# THE DEFAULTS INITIALIZATION - OPTIONALS
+	_arg_output_directory=
+	_arg_files_to_extract=
+	_arg_progress="off"
+
+
+	print_help()
+	{
+		printf '%s\n' "<The general help message of my script>"
+		printf 'Usage: %s [--output-directory <arg>] [--files-to-extract <arg>] [--(no-)progress] [-h|--help] <file>\n' "$0"
+		printf '\t%s\n' "-h, --help: Prints help"
+	}
+
+
+	parse_commandline()
+	{
+		_positionals_count=0
+		while test $# -gt 0
+		do
+			_key="$1"
+			case "$_key" in
+				-d|--output-directory)
+					test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+					_arg_output_directory="$2"
+					shift
+					;;
+				--output-directory=*)
+					_arg_output_directory="${_key##--output-directory=}"
+					;;
+				--files-to-extract)
+					test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+					_arg_files_to_extract="$2"
+					shift
+					;;
+				--files-to-extract=*)
+					_arg_files_to_extract="${_key##--files-to-extract=}"
+					;;
+				-p|--progress)
+					_arg_progress="on"
+# 					test "${1:0:5}" = "--no-" && _arg_progress="off"
+					;;
+				-h|--help)
+					print_help
+					exit 0
+					;;
+				-h*)
+					print_help
+					exit 0
+					;;
+				*)
+					_last_positional="$1"
+					_positionals+=("$_last_positional")
+					_positionals_count=$((_positionals_count + 1))
+					;;
+			esac
+			shift
+		done
+	}
+
+
+	handle_passed_args_count()
+	{
+		local _required_args_string="'file'"
+		test "${_positionals_count}" -ge 1 || _PRINT_HELP=yes die "FATAL ERROR: Not enough positional arguments - we require exactly 1 (namely: $_required_args_string), but got only ${_positionals_count}." 1
+		test "${_positionals_count}" -le 1 || _PRINT_HELP=yes die "FATAL ERROR: There were spurious positional arguments --- we expect exactly 1 (namely: $_required_args_string), but got ${_positionals_count} (the last one was: '${_last_positional}')." 1
+	}
+
+
+	assign_positional_args()
+	{
+		local _positional_name _shift_for=$1
+		_positional_names="_arg_file "
+
+		shift "$_shift_for"
+		for _positional_name in ${_positional_names}
+		do
+			test $# -gt 0 || break
+			eval "$_positional_name=\${1}" || die "Error during argument parsing." 1
+			shift
+		done
+	}
+
+	parse_commandline "$@"
+	handle_passed_args_count
+	assign_positional_args 1 "${_positionals[@]}"
+	
+	if test -e "$_arg_file"; then
+		println::info "Extracting $_arg_file"
+		
+		# Whether to show progress
+		if test "$_arg_progress" == "on"; then
+			garca x -o"${_arg_output_directory:="$PWD"}"
+		else
+			echo
+		fi
+	else
+		println::error "$_arg_file does not exist"
+	fi
+	
+}
+
+function public.metadata()
+{
+	ensure::garca
+	
+}
+
+
+#####################
+### Initialization
+#####################
+
+function print_help()
+{
+	println::helpgen GDK \
+		--short-desc "\
+GearLock Development Kit\
+" \
+	\
+		--usage "\
+${_self} [OPTIONAL-OPTIONS] [SUBCOMMAND] <subcommand-arguments>\
+" \
+	\
+		--options-desc "\
+-V, --version<^>Print version info and exit
+-v, --verbose<^>Use very verbose output
+-q, --quiet<^>No output printed to stdout
+--offline<^>Run without checking for update
+-h, --help<^>Prints this help information\
+" \
+	\
+		--subcommands "\
+new<^>${SUBCOMMANDS_DESC[1]}
+build<^>${SUBCOMMANDS_DESC[2]}
+clean<^>${SUBCOMMANDS_DESC[3]}
+extract<^>${SUBCOMMANDS_DESC[4]}
+install<^>${SUBCOMMANDS_DESC[5]}
+metadata<^>${SUBCOMMANDS_DESC[6]}\
+" \
+	\
+		--footer-msg "\
+Try 'gdk <subcommand> --help' for more information on a specific command.
+For bugreports: https://github.com/gearlock-users-repo/issues\
+"
+}
+
+
+# Constants
+GCOMM="gearlock"
+PS3="$(echo -e "\nEnter a number >> ")"
+VERSION="0.1.0"
+SUBCOMMANDS_DESC=(
+	""
+	"Create a new gxp project"
+	"Compile the targetted project"
+	"Remove the target directory"
+	"Extract a gxp to target dir"
+	"Install gdk onto PATH"
+	"Fetch metadata of a gxp"
+)
+## Colors
+RC='\033[0m' RED='\033[0;31m' BRED='\033[1;31m' GRAY='\033[1;30m' 
+BLUE='\033[0;34m' BBLUE='\033[1;34m' CYAN='\033[0;34m' BCYAN='\033[1;34m' 
+WHITE='\033[1;37m' GREEN='\033[0;32m' BGREEN='\033[1;32m' YELLOW='\033[1;33m' 
+PURPLE='\033[0;35m' BPURPLE='\033[1;35m' ORANGE='\033[0;33m'
+
+# Dynamics
+_self="${0##*/}"
+_selfDir="$(dirname "$(readlink -f "$0")")"
+_arg_verbose=off
+_arg_quiet=off
+_arg_offline=off
+
+# Assign optional parent arguments
+for arg in "${@}"; do
+	case "$arg" in
+		--verbose|-v)
+			_arg_verbose=on
+			;;
+		--quiet|-q)
+			_arg_quiet=on
+			;;
+		--offline)
+			_arg_offline=on
+			;;
+		--version|-V)
+			echo "$VERSION"
+			exit 0
+			;;
+		--help|-h*)
+			print_help
+			exit 0
+			;;
+	esac
+done
+
+# Drop/escape optional parent arguments
+	for i in $(a=$#; until test $a -eq 0; do echo $a; ((a--)); done); do
+		eval "echo \$$i" | grep -E 'verbose|quiet|offline' 1>/dev/null && {
+			set -- "${@:1:$i-1}" "${@:$i+1}"
+		}
+	done
+# TODO(LESSON): Dynamic argument parsing on bash is a nightmare. Well, at least for me on this script.
+
+
+#####################
+### Setup options
+#####################
+## Verbose
+test "$_arg_verbose" == on && test "$_arg_quiet" == off && {
+	set -x
+}
+
+## Online
+# test "$_arg_offline" == "off" && {
+# 	lock_file="${GTMP:-"/tmp"}/gdk.update.lock"
+# 	_date="$(date '+%d-%m')" || return
+# 	touch "$lock_file" || return
+# 	test "$(< "$lock_file")" != "$_date" && {
+# 		echo "$_date" > "$lock_file"
+# 		test -z "$NO_PULL" && SHA="$(sha256sum "$0")" && {
+# 			println::info "Fetching update information"
+# 			# Close stream on 4th line
+# 			test "$SHA" != "$(curl --silent \
+# 								https://api.github.com/repos/AXIM0S/gdk/contents/src/gdk \
+# 									| head -n4 | grep -I '"sha":' | sed -E 's/.*"([^"]+)".*/\1/')" && {
+# 				println::warn "We will need superuser privileges to update the binaries"
+# 				sudo curl -o "$0" "https://github.com/AXIM0S/gdk/raw/main/src/gdk" || println::error "Failed to perform the update"
+# 			}
+# 			test "$(sha256sum "$0")" != "$SHA" && NO_PULL=true exec "$0" "$@"
+# 		}
+# 	}
+# }
+
+
+argv="$1" && shift
+
+case "$argv" in
+	new)
+		private.new "$@"
+		;;
+	build)
+		private.build "$@"
+		;;
+	clean)
+		echo
+		;;
+	extract)
+		private.extract "$@"
+		;;
+	install)
+		private.install
+		;;
+	metadata)
+		private.metadata "$@"
+		;;
+	*)
+		test -n "$argv" && println::warn "Unknown subcommand: $argv"
+		print_help
+		test -n "$argv" && exit 1 || exit 0
+		;;
+esac
+
+unset argv
+exit
+
+# TODO: Ensure metadata names.
+# TODO: Implement a way to carry-on future breaking changes into current project.
+# TODO: Track .!zygote dir on initialization.
+
+# GARCA_EMBEDED
